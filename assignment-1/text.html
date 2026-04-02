@@ -199,7 +199,7 @@
           <div class="hero-meta">
             <div><p class="meta-label">Executed by</p><p class="meta-value">Le Tan Minh Khoa (2352563)</p></div>
             <div><p class="meta-label">Dataset</p><p class="meta-value">20 Newsgroups</p></div>
-            <div><p class="meta-label">Models used</p><p class="meta-value">BiLSTM & DistilBERT</p></div>
+            <div><p class="meta-label">Models used</p><p class="meta-value">RNN & DistilBERT</p></div>
             <div><p class="meta-label">Extensions</p><p class="meta-value">Gradio Web App</p></div>
           </div>
         </article>
@@ -267,14 +267,16 @@
                 <div class="stage-badge">collections.Counter</div>
               </div>
             </div>
+            
             <div class="pipeline-stage">
-              <div class="stage-icon" style="color: var(--accent3); border-color: var(--accent3); box-shadow: 0 0 15px rgba(99,132,255,0.2);">03</div>
-              <div class="stage-content" style="border-color: var(--accent3);">
-                <div class="stage-title" style="color: var(--accent3);">Subword Tokenization (For Transformer)</div>
+              <div class="stage-icon">03</div>
+              <div class="stage-content">
+                <div class="stage-title">Subword Tokenization (For Transformer)</div>
                 <div class="stage-desc">Instead of a custom word-level vocab, we utilize HuggingFace's <code>AutoTokenizer</code> (distilbert-base-uncased). It applies a highly sophisticated WordPiece subword tokenization, effectively handling Out-Of-Vocabulary (OOV) words by breaking them into familiar syllables.</div>
-                <div class="stage-badge" style="color: var(--accent3); background: rgba(99,132,255,0.1);">AutoTokenizer</div>
+                <div class="stage-badge">AutoTokenizer</div>
               </div>
             </div>
+
             <div class="pipeline-stage">
               <div class="stage-icon">04</div>
               <div class="stage-content">
@@ -311,7 +313,7 @@ def load_and_clean_data():
 
       <section id="text-models" class="section">
         <div class="section-head">
-          <h2 class="section-title">3. Model Building, Training, and Comparison</h2>
+          <h2 class="section-title">3. Model building, training, and comparison</h2>
           <p class="section-copy">Establishing a unified training loop in <code>ulti_text.py</code> to evaluate RNN and DistilBERT objectively.</p>
         </div>
         <article class="content-card">
@@ -424,14 +426,14 @@ def load_and_clean_data():
           <div class="deliverable-note" style="margin-top: 2.5rem; font-style: normal; padding: 2rem;">
             <div class="story-grid" style="margin-bottom: 0;">
               <div>
-                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent);">Bi-LSTM Analysis</h4>
+                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent);">RNN (Bi-LSTM) Analysis</h4>
                 <ul class="mini-list" style="font-size: 0.9rem; margin-top: 0.8rem;">
                   <li><strong>Best Class:</strong> <code>misc.forsale</code>. This class achieved the highest recall (~78.5%) with 306 correct predictions out of 390 samples. The distinct and domain-specific vocabulary surrounding marketplace listings allowed the Bi-LSTM to capture sequential patterns effectively, minimizing confusion with other categories.</li>
                   <li><strong>Worst Class:</strong> <code>comp.sys.ibm.pc.hardware</code>. With only 164 correct predictions out of 392 samples (~41.8% recall), this class suffered heavily from confusion with semantically adjacent classes such as <code>comp.windows.x</code> (42 misclassified), <code>comp.sys.mac.hardware</code> (32), and <code>comp.graphics</code> (29). The sequential model struggled to distinguish between overlapping technical terminologies shared across computer-related newsgroups.</li>
                 </ul>
               </div>
               <div>
-                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent3);">DistilBERT Analysis</h4>
+                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent3);">Transformer (DistilBERT) Analysis</h4>
                 <ul class="mini-list" style="font-size: 0.9rem; margin-top: 0.8rem;">
                   <li><strong>Best Class:</strong> <code>rec.sport.hockey</code>. Achieved near-perfect recall of ~97.5% with 389 correct predictions out of 399 samples. The transformer's deep contextual understanding allowed it to effortlessly identify highly specific sport-related keywords and entities unique to this domain, leaving minimal room for misclassification.</li>
                   <li><strong>Worst Class:</strong> <code>talk.religion.misc</code>. With only 135 correct predictions out of 251 samples (~53.8% recall), this class recorded the most significant confusion, particularly with <code>alt.atheism</code> (78 misclassified samples). The semantic overlap between general religious discourse and atheism-related discussions presents a fundamental challenge even for transformer-based models, as both topics frequently share similar argumentative language and contextual framing.</li>
