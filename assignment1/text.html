@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment 1 | Text Report</title>
+  <meta name="description" content="Text classification report for Assignment 1, comparing RNN and Transformer.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  
+  <style>
+    /* COLOR PALETTE & TYPOGRAPHY - TEXT THEME (PURPLE ACCENT) */
+    :root {
+      --bg: #050810;
+      --surface: #0c1120;
+      --border: rgba(167,139,250,0.25);
+      --accent: #a78bfa;
+      --accent2: #38bdf8;
+      --accent3: #6384ff;
+      --text: #e8eaf6;
+      --muted: #8b9bb4;
+      --card: rgba(12,17,32,0.6);
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    
+    [data-theme="light"] {
+      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --accent: #8b5cf6; --text: #0f172a; --muted: #64748b; --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 15px; line-height: 1.65; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background-image: linear-gradient(rgba(167,139,250,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(167,139,250,0.03) 1px, transparent 1px); background-size: 64px 64px; }
+    
+    a { color: var(--accent); text-decoration: none; }
+    ul { padding-left: 1.5rem; }
+    
+    /* TOPBAR */
+    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(5,8,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    [data-theme="light"] .topbar { background: rgba(255,255,255,0.85); }
+    .brand { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text); }
+    .brand-label { font-size: 1.1rem; }
+    .brand-note { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+    .topnav { display: flex; gap: 1.5rem; }
+    .topnav a { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; transition: color 0.2s; }
+    .topnav a:hover, .topnav a.active { color: var(--accent); }
+    .theme-toggle { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+
+    /* LAYOUT */
+    .assignment-layout { display: flex; max-width: 1400px; margin: 0 auto; padding-top: 4.5rem; }
+    .side-rail-nav { width: 240px; position: sticky; top: 5.5rem; height: calc(100vh - 6rem); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; border-right: 1px solid var(--border); flex-shrink: 0; }
+    .side-rail-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
+    .side-rail-link:hover, .side-rail-link.is-active { background: rgba(167,139,250,0.1); color: var(--accent); }
+    .side-rail-icon svg { width: 18px; height: 18px; }
+    
+    .assignment-flow { flex: 1; padding: 2rem 3rem 6rem; min-width: 0; }
+    .section { margin-bottom: 4rem; scroll-margin-top: 6rem; }
+    
+    /* HERO */
+    .page-hero { display: flex; flex-direction: column; gap: 2rem; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 1rem; }
+    .hero-card h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+    .hero-card h1 span { color: var(--accent); }
+    .page-subtitle { font-size: 1.1rem; color: var(--muted); max-width: 700px; margin-bottom: 2rem; }
+    .button-row { display: flex; gap: 1rem; margin-bottom: 3rem; }
+    .button { padding: 0.6rem 1.4rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+    .button-primary { background: var(--accent); color: #fff; border: none; }
+    .button-primary:hover { background: #8b5cf6; transform: translateY(-2px); }
+    .button-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    
+    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+    .meta-value { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 0.3rem; }
+
+    /* SECTION HEADERS & CARDS */
+    .section-title { font-size: 1.8rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .section-copy { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;}
+    .content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-bottom: 2rem; }
+    .card-kicker { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent2); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+    .track-copy { color: var(--muted); margin-bottom: 1rem; }
+    .deliverable-note { margin-top: 1rem; padding: 1.5rem; background: rgba(167,139,250,0.05); border-left: 4px solid var(--accent); font-size: 0.95rem; border-radius: 0 8px 8px 0; }
+
+    /* STUNNING TIMELINE PIPELINE */
+    .pipeline-container { display: flex; flex-direction: column; gap: 0; padding: 1rem 0; position: relative; margin: 2rem 0; }
+    .pipeline-stage { display: flex; gap: 1.5rem; position: relative; padding-bottom: 2.5rem; }
+    .pipeline-stage:last-child { padding-bottom: 0; }
+    .pipeline-stage:not(:last-child)::after { content: ''; position: absolute; left: 1.5rem; top: 3.5rem; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(167,139,250,0.1)); z-index: 0; }
+    .stage-icon { width: 3rem; height: 3rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); box-shadow: 0 0 15px rgba(167, 139, 250, 0.2); z-index: 1; flex-shrink: 0; font-family: var(--font-mono); }
+    .stage-content { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; flex: 1; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+    .stage-content:hover { transform: translateX(5px); border-color: var(--accent); box-shadow: 0 8px 25px rgba(167,139,250,0.15); }
+    .stage-title { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text); }
+    .stage-desc { font-size: 0.9rem; color: var(--muted); }
+    .stage-badge { display: inline-block; padding: 0.2rem 0.6rem; background: rgba(167,139,250,0.1); color: var(--accent); border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-top: 0.8rem; font-family: var(--font-mono); }
+
+    /* CODE SAMPLE */
+    .code-sample { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+    .code-sample-bar { display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+    .code-sample-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+    .code-sample-dots span:nth-child(1) { background: #ff5f56; }
+    .code-sample-dots span:nth-child(2) { background: #ffbd2e; }
+    .code-sample-dots span:nth-child(3) { background: #27c93f; }
+    .code-sample-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+    .code-sample-copy { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+    .code-sample-copy:hover { color: #fff; border-color: #fff; }
+    .code-sample pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: 0.85rem; font-family: var(--font-mono); }
+
+    /* FIGURES & TABLES */
+    .figure-stack-two { display: flex; gap: 2rem; margin: 2rem 0; }
+    .figure-frame { flex: 1; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #000; cursor: zoom-in; }
+    .figure-frame img { width: 100%; height: auto; display: block; opacity: 0.9; transition: opacity 0.2s; }
+    .figure-frame:hover img { opacity: 1; }
+    .figure-caption { text-align: center; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.8rem; }
+    .compare-table { width: 100%; border-collapse: collapse; text-align: left; margin: 1.5rem 0; }
+    .compare-table th, .compare-table td { padding: 1rem; border-bottom: 1px solid var(--border); }
+    .compare-table th { background: rgba(167,139,250,0.05); color: var(--accent); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; }
+
+    /* INTERACTIVE TABS (FIXED) */
+    .transfer-explorer { margin-top: 2rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .transfer-step-rail { display: flex; flex-wrap: nowrap; overflow-x: auto; background: rgba(5,8,16,0.6); padding: 1rem; border-bottom: 1px solid var(--border); }
+    .transfer-step-rail::-webkit-scrollbar { height: 6px; }
+    .transfer-step-rail::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    .transfer-step-wrap { display: flex; align-items: center; flex-shrink: 0; }
+    .transfer-step { display: flex; flex-direction: column; background: transparent; border: 1px solid transparent; color: var(--muted); text-align: left; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; min-width: 160px; }
+    .transfer-step:hover, .transfer-step.is-active { background: var(--surface); border-color: var(--accent); color: var(--text); }
+    .transfer-step-index { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); margin-bottom: 0.3rem; white-space: nowrap; }
+    .transfer-step-title { font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+    .transfer-step-connector { padding: 0 0.8rem; color: var(--muted); font-size: 1.2rem; flex-shrink: 0; }
+    .transfer-detail-panel { display: none; padding: 2rem; background: var(--surface); animation: fadeIn 0.3s; }
+    .transfer-detail-panel.is-active { display: block; }
+    .transfer-detail-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+
+    /* LIGHTBOX */
+    .image-lightbox[hidden] { display: none; }
+    .image-lightbox { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+    .image-lightbox-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
+    .image-lightbox-shell { position: relative; z-index: 1001; display: flex; flex-direction: column; width: 100%; height: 100%; padding: 2rem; }
+    .image-lightbox-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+    .image-lightbox-button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+    .image-lightbox-image { max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto;}
+    .image-lightbox-caption { text-align: center; color: #fff; padding-top: 1rem; }
+    
+    @media (max-width: 992px) {
+      .assignment-layout { flex-direction: column; }
+      .side-rail-nav { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); }
+      .assignment-flow { padding: 2rem 1rem; }
+      .story-grid { grid-template-columns: 1fr; }
+      .figure-stack-two { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <header class="topbar">
+    <a class="brand" href="../index.html">
+      <span class="brand-copy">
+        <p class="brand-label">3AIPRO · Text</p>
+        <p class="brand-note">Text Classification Report (Assignment 1)</p>
+      </span>
+    </a>
+    <nav class="topnav">
+      <a href="../index.html">Home</a>
+      <a href="image.html">Image</a>
+      <a href="text.html" class="active">Text</a>
+      <a href="multimodal.html">Multimodal</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
+    </div>
+  </header>
+
+  <main id="main-content" class="assignment-layout">
+    
+    <aside class="side-rail-nav">
+      <a class="side-rail-link" href="#overview" data-section-link="overview"><span class="side-rail-icon">■</span><span class="side-rail-label">Overview</span></a>
+      <a class="side-rail-link" href="#text-eda" data-section-link="text-eda"><span class="side-rail-icon">■</span><span class="side-rail-label">EDA & Dataset</span></a>
+      <a class="side-rail-link" href="#text-pipeline" data-section-link="text-pipeline"><span class="side-rail-icon">■</span><span class="side-rail-label">Data Pipeline</span></a>
+      <a class="side-rail-link" href="#text-models" data-section-link="text-models"><span class="side-rail-icon">■</span><span class="side-rail-label">Models Setup</span></a>
+      <a class="side-rail-link" href="#text-results" data-section-link="text-results"><span class="side-rail-icon">■</span><span class="side-rail-label">Results</span></a>
+      <a class="side-rail-link" href="#text-extensions" data-section-link="text-extensions"><span class="side-rail-icon">■</span><span class="side-rail-label">Extensions</span></a>
+    </aside>
+
+    <div class="assignment-flow">
+      
+      <section id="overview" class="section page-hero">
+        <article class="hero-card">
+          <p class="eyebrow">Text Track</p>
+          <h1>RNN vs Transformer on <span>20 Newsgroups</span>.</h1>
+          <p class="page-subtitle">Evaluating Natural Language Processing (NLP) performance on the 20 Newsgroups dataset. Comparing sequential modeling (RNN) against Self-Attention (DistilBERT).</p>
+          
+          <div class="button-row">
+            <a class="button button-primary" href="#text-eda">View Detailed Report</a>
+            <a class="button button-secondary" href="../index.html">Back to Home</a>
+          </div>
+          
+          <div class="hero-meta">
+            <div><p class="meta-label">Executed by</p><p class="meta-value">Le Tan Minh Khoa (2352563)</p></div>
+            <div><p class="meta-label">Dataset</p><p class="meta-value">20 Newsgroups</p></div>
+            <div><p class="meta-label">Models used</p><p class="meta-value">BiLSTM & DistilBERT</p></div>
+            <div><p class="meta-label">Extensions</p><p class="meta-value">Gradio Web App</p></div>
+          </div>
+        </article>
+      </section>
+
+      <section id="text-eda" class="section">
+        <div class="section-head">
+          <h2 class="section-title">1. Problem and Dataset Exploration (EDA)</h2>
+          <p class="section-copy">Understanding the linguistic challenges and class distribution within the corpus.</p>
+        </div>
+        <article class="content-card">
+          <div class="story-grid">
+            <div class="story-block">
+              <p class="card-kicker">Problem statement</p>
+              <h3 class="card-title">Classifying 20 Newsgroups</h3>
+              <p class="track-copy">The core objective is to read a raw English text document (such as an email or a forum post) and accurately classify it into exactly 1 of 20 distinct topics, ranging from <code>comp.graphics</code> to <code>talk.politics.mideast</code>. This serves as a fundamental benchmark in Text Classification.</p>
+            </div>
+            <div class="story-block">
+              <p class="card-kicker">Dataset Highlights</p>
+              <h3 class="card-title">Text Characteristics & Noise</h3>
+              <ul class="mini-list" style="color: var(--muted)">
+                <li>Data is securely fetched using <code>sklearn.datasets.fetch_20newsgroups</code>.</li>
+                <li><strong>The Challenge:</strong> Raw text is heavily polluted with metadata, email headers, quoted replies, HTML tags, and erratic punctuation, which introduces severe noise for the embedding layer.</li>
+                <li>While class distribution is relatively balanced, document lengths vary drastically, posing a truncation challenge for fixed-size neural networks.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="figure-frame" style="margin-top: 2rem;">
+            <img src="images/class_distribution_text.png" alt="Dataset Class Distribution">
+          </div>
+          <p class="figure-caption">Figure 1: Distribution of documents across the 20 topic classes in the 20 Newsgroups dataset.</p>
+          
+          <div class="deliverable-note" style="margin-top: 1.5rem; font-style: normal;">
+            <strong>Dataset Conclusion:</strong> As prominently observed in the distribution chart above, the 20 Newsgroups dataset is highly <strong>balanced</strong>, with the vast majority of classes containing between 500 and 600 training samples (with only a minor dip in <code>talk.religion.misc</code>). 
+            <br><br>
+            This well-balanced nature is highly advantageous: it implies that we do not need to implement complex resampling techniques or apply heavy class weights during the training phase. Consequently, standard evaluation metrics like <strong>Accuracy</strong> and <strong>Macro F1-Score</strong> will serve as highly reliable and objective indicators of our models' true performance.
+          </div>
+        </article>
+      </section>
+
+      <section id="text-pipeline" class="section">
+        <div class="section-head">
+          <h2 class="section-title">2. Dataset, DataLoader, and Preprocessing Setup</h2>
+          <p class="section-copy">Advanced data cleaning and distinct tokenization pipelines for RNN and DistilBERT via <code>preprocess_text.py</code>.</p>
+        </div>
+        <article class="content-card">
+          <h3 class="card-title">Text Cleaning & Tokenization Workflow</h3>
+          <p class="track-copy">Unlike computer vision tasks where pixels have natural spatial relationships, unstructured text must be meticulously cleaned and converted into dense numerical sequences (Token IDs) before being fed into a Neural Network.</p>
+          
+          <div class="pipeline-container">
+            <div class="pipeline-stage">
+              <div class="stage-icon">01</div>
+              <div class="stage-content">
+                <div class="stage-title">Text Cleaning (Regex Filter)</div>
+                <div class="stage-desc">The <code>clean_text(text)</code> function deploys Regular Expressions (Regex) to aggressively strip excess whitespaces, remove all non-alphanumeric punctuation (<code>[^\w\s]</code>), and strictly lowercase all characters to drastically reduce the sheer size of the vocabulary.</div>
+                <div class="stage-badge">re.sub</div>
+              </div>
+            </div>
+            <div class="pipeline-stage">
+              <div class="stage-icon">02</div>
+              <div class="stage-content">
+                <div class="stage-title">Custom Vocabulary Builder (For RNN)</div>
+                <div class="stage-desc">Word frequencies are precisely counted using a dictionary <code>Counter</code>. Rare words appearing less than twice are discarded to filter out noise. Crucial special tokens <code>&lt;PAD&gt;</code> and <code>&lt;UNK&gt;</code> are forcibly injected into the mapping.</div>
+                <div class="stage-badge">collections.Counter</div>
+              </div>
+            </div>
+            <div class="pipeline-stage">
+              <div class="stage-icon" style="color: var(--accent3); border-color: var(--accent3); box-shadow: 0 0 15px rgba(99,132,255,0.2);">03</div>
+              <div class="stage-content" style="border-color: var(--accent3);">
+                <div class="stage-title" style="color: var(--accent3);">Subword Tokenization (For Transformer)</div>
+                <div class="stage-desc">Instead of a custom word-level vocab, we utilize HuggingFace's <code>AutoTokenizer</code> (distilbert-base-uncased). It applies a highly sophisticated WordPiece subword tokenization, effectively handling Out-Of-Vocabulary (OOV) words by breaking them into familiar syllables.</div>
+                <div class="stage-badge" style="color: var(--accent3); background: rgba(99,132,255,0.1);">AutoTokenizer</div>
+              </div>
+            </div>
+            <div class="pipeline-stage">
+              <div class="stage-icon">04</div>
+              <div class="stage-content">
+                <div class="stage-title">Padding, Truncation & DataLoaders</div>
+                <div class="stage-desc">Sequences are forcefully padded or truncated to a uniform <code>max_length=256</code> to form perfect rectangular matrices. Finally, they are batched for optimized GPU memory ingestion.</div>
+                <div class="stage-badge">DataLoader</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">preprocess_text.py</span>
+              <button class="code-sample-copy" data-copy-code>Copy</button>
+            </div>
+<pre><code class="language-python">def clean_text(text):
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[^\w\s]', '', text)
+    return text.strip().lower()
+
+def load_and_clean_data():
+    print("Downloading and loading 20 Newsgroups dataset...")
+    train_data = fetch_20newsgroups(subset='train')
+    test_data = fetch_20newsgroups(subset='test')
+    
+    df_train = pd.DataFrame({'text': [clean_text(t) for t in train_data.data], 'label': train_data.target})
+    df_test = pd.DataFrame({'text': [clean_text(t) for t in test_data.data], 'label': test_data.target})
+    
+    return df_train, df_test, train_data.target_names</code></pre>
+          </div>
+        </article>
+      </section>
+
+      <section id="text-models" class="section">
+        <div class="section-head">
+          <h2 class="section-title">3. Model Building, Training, and Comparison</h2>
+          <p class="section-copy">Establishing a unified training loop in <code>ulti_text.py</code> to evaluate RNN and DistilBERT objectively.</p>
+        </div>
+        <article class="content-card">
+          <p class="card-kicker">Interactive Pipeline</p>
+          <h3 class="card-title">NLP Forward Pass Workflow</h3>
+          
+          <div class="transfer-explorer" data-transfer-explorer>
+            <div class="transfer-step-rail" role="tablist">
+              <div class="transfer-step-wrap">
+                <button class="transfer-step is-active" type="button" role="tab" aria-controls="panel-input" id="tab-input">
+                  <span class="transfer-step-index">STEP 1</span><span class="transfer-step-title">Tokenization Mapping</span>
+                </button><span class="transfer-step-connector">→</span>
+              </div>
+              <div class="transfer-step-wrap">
+                <button class="transfer-step" type="button" role="tab" aria-controls="panel-backbone" id="tab-backbone">
+                  <span class="transfer-step-index">STEP 2</span><span class="transfer-step-title">Model Architecture</span>
+                </button><span class="transfer-step-connector">→</span>
+              </div>
+              <div class="transfer-step-wrap">
+                <button class="transfer-step" type="button" role="tab" aria-controls="panel-eval" id="tab-eval">
+                  <span class="transfer-step-index">STEP 3</span><span class="transfer-step-title">Prediction Output</span>
+                </button>
+              </div>
+            </div>
+            
+            <div class="transfer-detail-shell">
+              <div class="transfer-detail-panel is-active" id="panel-input" role="tabpanel">
+                <h4 class="transfer-detail-title">Token IDs & Attention Mask Generation</h4>
+                <p>Cleaned text is mapped to Integer IDs. Crucially, for Transformers, an <code>attention_mask</code> is also dynamically generated to instruct the model to explicitly ignore <code>&lt;PAD&gt;</code> tokens during attention weight calculation.</p>
+              </div>
+              <div class="transfer-detail-panel" id="panel-backbone" role="tabpanel">
+                <h4 class="transfer-detail-title">Sequential Memory vs Self-Attention</h4>
+                <p><strong>RNN (Bi-LSTM):</strong> Processes tokens sequentially from left-to-right (and vice versa), maintaining a hidden state. However, it severely struggles with the "vanishing gradient" problem on long documents.<br>
+                <strong>DistilBERT:</strong> Computes all tokens concurrently using Multi-Head Self-Attention, deeply understanding the holistic, non-linear context of the entire document without distance penalties.</p>
+              </div>
+              <div class="transfer-detail-panel" id="panel-eval" role="tabpanel">
+                <h4 class="transfer-detail-title">Logits & Cross Entropy Loss</h4>
+                <p>The model outputs a 20-dimensional tensor (logits). <code>torch.argmax</code> selects the topic index with the highest probability. CrossEntropyLoss is utilized to calculate the error and compute gradients for backpropagation.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="soft-divider"></div>
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">ulti_text.py (Evaluator Excerpt)</span>
+              <button class="code-sample-copy" data-copy-code>Copy</button>
+            </div>
+<pre><code class="language-python">with torch.no_grad():
+    for batch in tqdm(test_loader, desc=f"Epoch {epoch+1}/{epochs} [Eval]"):
+        if model_type == "RNN":
+            inputs, labels = batch
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            preds = torch.argmax(outputs, dim=1)
+        else:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+            preds = torch.argmax(outputs.logits, dim=1)
+            
+        all_preds.extend(preds.cpu().numpy())
+        all_labels.extend(labels.cpu().numpy())</code></pre>
+          </div>
+        </article>
+      </section>
+
+      <section id="text-results" class="section">
+        <div class="section-head">
+          <h2 class="section-title">4. Experimental Results & Analysis</h2>
+          <p class="section-copy">Comprehensive evaluation confirms the massive architectural superiority of the Transformer model in NLP tasks.</p>
+        </div>
+        <article class="content-card">
+          <div class="story-grid">
+            <div class="story-block">
+              <p class="card-kicker">Quantitative Results</p>
+              <h3 class="card-title">Performance Comparison</h3>
+              <p class="track-copy">The results below are recorded at the final evaluation epoch on the official sklearn test split.</p>
+              <div class="compare-table">
+                <table>
+                  <thead>
+                    <tr><th>Model</th><th>Accuracy</th><th>Macro F1</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>RNN (Bi-LSTM)</strong></td><td>58.11%</td><td>0.5844</td></tr>
+                    <tr><td><strong>DistilBERT (Pretrained)</strong></td><td>83.70%</td><td>0.8329</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="story-block">
+              <p class="card-kicker">Key Discussion</p>
+              <h3 class="card-title">Transformer vs. RNN</h3>
+              <p class="track-copy">The <strong>~25.59%</strong> accuracy gap proves that DistilBERT's pretrained knowledge and Self-Attention mechanism are far more effective at capturing long-range dependencies and rare vocabulary than a Bi-LSTM trained from scratch.</p>
+            </div>
+          </div>
+          
+          <div class="figure-stack-two">
+            <div class="figure-frame">
+              <img src="images/BiLSTM with Attention Confusion Matrix.png" alt="Bi-LSTM Confusion Matrix">
+            </div>
+            <div class="figure-frame">
+              <img src="images/DistilBERT Confusion Matrix.png" alt="DistilBERT Confusion Matrix">
+            </div>
+          </div>
+          <p class="figure-caption">Figure 2 & 3: Confusion Matrices for Bi-LSTM (left) and DistilBERT (right) on the 20 Newsgroups test set.</p>
+
+          <div class="deliverable-note" style="margin-top: 2.5rem; font-style: normal; padding: 2rem;">
+            <div class="story-grid" style="margin-bottom: 0;">
+              <div>
+                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent);">Bi-LSTM Analysis</h4>
+                <ul class="mini-list" style="font-size: 0.9rem; margin-top: 0.8rem;">
+                  <li><strong>Best Class:</strong> <code>misc.forsale</code>. This class achieved the highest recall (~78.5%) with 306 correct predictions out of 390 samples. The distinct and domain-specific vocabulary surrounding marketplace listings allowed the Bi-LSTM to capture sequential patterns effectively, minimizing confusion with other categories.</li>
+                  <li><strong>Worst Class:</strong> <code>comp.sys.ibm.pc.hardware</code>. With only 164 correct predictions out of 392 samples (~41.8% recall), this class suffered heavily from confusion with semantically adjacent classes such as <code>comp.windows.x</code> (42 misclassified), <code>comp.sys.mac.hardware</code> (32), and <code>comp.graphics</code> (29). The sequential model struggled to distinguish between overlapping technical terminologies shared across computer-related newsgroups.</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="stage-title" style="font-size: 1.1rem; color: var(--accent3);">DistilBERT Analysis</h4>
+                <ul class="mini-list" style="font-size: 0.9rem; margin-top: 0.8rem;">
+                  <li><strong>Best Class:</strong> <code>rec.sport.hockey</code>. Achieved near-perfect recall of ~97.5% with 389 correct predictions out of 399 samples. The transformer's deep contextual understanding allowed it to effortlessly identify highly specific sport-related keywords and entities unique to this domain, leaving minimal room for misclassification.</li>
+                  <li><strong>Worst Class:</strong> <code>talk.religion.misc</code>. With only 135 correct predictions out of 251 samples (~53.8% recall), this class recorded the most significant confusion, particularly with <code>alt.atheism</code> (78 misclassified samples). The semantic overlap between general religious discourse and atheism-related discussions presents a fundamental challenge even for transformer-based models, as both topics frequently share similar argumentative language and contextual framing.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="figure-stack-two" style="margin-top: 4rem;">
+            <div class="figure-frame"><img src="images/Loss and Accuracy curves for RNN.png" alt="RNN Training Curve"></div>
+            <div class="figure-frame"><img src="images/Loss and Accuracy curves for DistilBER.png" alt="DistilBERT Training Curve"></div>
+          </div>
+          <p class="figure-caption">Figure 4 & 5: Loss and Accuracy training curves for the baseline RNN versus the DistilBERT transformer.</p>
+          
+          <div class="deliverable-note" style="margin-top: 1.5rem; font-style: normal;">
+            <strong>Training Dynamics Conclusion:</strong> A comparative analysis of the loss and accuracy curves reveals a stark contrast in convergence behavior between the two architectures:
+            <br><br>
+            <strong>1. Convergence Speed & Baseline:</strong> DistilBERT leverages powerful pre-trained weights, allowing it to achieve a remarkable ~79.91% validation accuracy after just a single training epoch. In contrast, the Bi-LSTM, which trains its embeddings entirely from scratch, struggles to reach ~34.59% accuracy in its first epoch and requires much longer to learn basic semantic representations.
+            <br><br>
+            <strong>2. Generalization Capacity:</strong> The RNN's validation accuracy quickly plateaus around 59.65% by epoch 5, indicating an architectural bottleneck in capturing long-range document context. Meanwhile, DistilBERT smoothly scales to ~85.18% with highly stable validation loss reduction, practically demonstrating the superior transfer learning and generalization capabilities of the Self-Attention mechanism on complex linguistic datasets.
+          </div>
+        </article>
+      </section>
+
+      <section id="text-extensions" class="section">
+        <div class="section-head">
+          <h2 class="section-title">5. Other Extension Reports</h2>
+          <p class="section-copy">Integrating a live interactive Web User Interface (Gradio) to seamlessly interact with the NLP model.</p>
+        </div>
+        <article class="content-card">
+          <div class="story-block" style="margin-bottom: 2rem;">
+            <p class="card-kicker">Application Demo</p>
+            <h3 class="card-title">Live Text Classification via Gradio</h3>
+            <p class="track-copy">Going significantly beyond static terminal printouts, an advanced Extension was successfully implemented by injecting the <strong>Gradio</strong> library directly into <code>main_Transformer.ipynb</code>. This sophisticated interface provides a real-world testing environment: users can type or paste any arbitrary English text snippet into the UI. DistilBERT dynamically tokenizes the input, computes the Softmax probabilities via an active GPU forward pass, and instantly visualizes the Top 3 most relevant topics using an elegant confidence bar chart.</p>
+          </div>
+          
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">main_Transformer.ipynb (Gradio Implementation)</span>
+              <button class="code-sample-copy" data-copy-code>Copy</button>
+            </div>
+<pre><code class="language-python">import gradio as gr
+import torch.nn.functional as F
+
+model_trans.eval()
+
+def predict_text(text):
+    if not text.strip(): return {"Please enter some text": 1.0}
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=256).to(device)
+    with torch.no_grad(): 
+        probs = F.softmax(model_trans(**inputs).logits, dim=1)[0]
+    top_probs, top_indices = torch.topk(probs, 3)
+    return {target_names[top_indices[i].item()]: top_probs[i].item() for i in range(3)}
+
+demo = gr.Interface(
+    fn=predict_text,
+    inputs=gr.Textbox(lines=5, label="Input English text"),
+    outputs=gr.Label(num_top_classes=3),
+    title="20 Newsgroups Classification Demo (DistilBERT)"
+)
+demo.launch()</code></pre>
+          </div>
+          
+          <div class="figure-frame" style="margin-top: 2rem;">
+            <img src="images/demo.jpg" alt="Gradio Interface Screenshot">
+          </div>
+          <p class="figure-caption">Figure 6: Screenshot of the Gradio web interface predicting user-inputted text in real-time.</p>
+        </article>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="image-lightbox" data-image-lightbox hidden>
+    <div class="image-lightbox-backdrop" data-image-lightbox-close></div>
+    <div class="image-lightbox-shell">
+      <div class="image-lightbox-toolbar">
+        <button class="image-lightbox-button" data-image-lightbox-close>Close</button>
+      </div>
+      <div class="image-lightbox-stage">
+        <img class="image-lightbox-image" data-image-lightbox-image src="" alt="">
+      </div>
+      <p class="image-lightbox-caption" data-image-lightbox-caption></p>
+    </div>
+  </div>
+
+  <footer class="topbar" style="position:static; margin-top:2rem; flex-direction:column; gap:1rem;">
+    <div class="brand"><p class="brand-label">3AIPRO · Deep Learning</p></div>
+    <p style="color:var(--muted); font-size:0.85rem">Deep Learning and Its Applications (CO3133)</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  
+  <script>
+    const root = document.documentElement;
+    const themeBtn = document.querySelector('[data-theme-toggle]');
+    themeBtn.addEventListener('click', () => {
+      root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+
+    const tabs = document.querySelectorAll('.transfer-step');
+    const panels = document.querySelectorAll('.transfer-detail-panel');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('is-active'));
+        panels.forEach(p => { p.classList.remove('is-active'); p.hidden = true; });
+        tab.classList.add('is-active');
+        document.getElementById(tab.getAttribute('aria-controls')).classList.add('is-active');
+        document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+      });
+    });
+
+    document.querySelectorAll('[data-copy-code]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const code = btn.closest('.code-sample').querySelector('code').innerText;
+        await navigator.clipboard.writeText(code);
+        btn.innerText = 'Copied!';
+        setTimeout(() => btn.innerText = 'Copy', 1500);
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.side-rail-link[data-section-link]').forEach(link => {
+            link.classList.toggle('is-active', link.dataset.sectionLink === entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: "-20% 0px -60% 0px" });
+    document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+
+    const lightbox = document.querySelector('[data-image-lightbox]');
+    const lbImg = document.querySelector('[data-image-lightbox-image]');
+    const lbCaption = document.querySelector('[data-image-lightbox-caption]');
+    document.querySelectorAll('.figure-frame img').forEach(img => {
+      img.addEventListener('click', () => {
+        lbImg.src = img.src;
+        lbCaption.innerText = img.closest('.figure-frame').nextElementSibling?.innerText || "";
+        lightbox.hidden = false;
+      });
+    });
+    document.querySelectorAll('[data-image-lightbox-close]').forEach(btn => {
+      btn.addEventListener('click', () => lightbox.hidden = true);
+    });
+  </script>
+</body>
+</html>
