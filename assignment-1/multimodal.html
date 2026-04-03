@@ -1,543 +1,104 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Assignment 1 | Multimodal Report</title>
-  <meta name="description" content="Multimodal classification report for Assignment 1, comparing Zero-shot and Few-shot with CLIP.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
-  
-  <style>
-    /* COLOR PALETTE & TYPOGRAPHY - MULTIMODAL THEME (CYAN/SKY BLUE ACCENT) */
-    :root {
-      --bg: #050810;
-      --surface: #0c1120;
-      --border: rgba(56,189,248,0.25);
-      --accent: #38bdf8;
-      --accent2: #4ade80;
-      --accent3: #6384ff;
-      --text: #e8eaf6;
-      --muted: #8b9bb4;
-      --card: rgba(12,17,32,0.6);
-      --font-sans: 'Plus Jakarta Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+<article class="content-card">
+  <div class="story-grid">
     
-    [data-theme="light"] {
-      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --accent: #0284c7; --text: #0f172a; --muted: #64748b; --card: #ffffff;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 15px; line-height: 1.65; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px); background-size: 64px 64px; }
-    
-    a { color: var(--accent); text-decoration: none; }
-    ul { padding-left: 1.5rem; }
-    
-    /* TOPBAR */
-    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(5,8,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    [data-theme="light"] .topbar { background: rgba(255,255,255,0.85); }
-    .brand { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text); }
-    .brand-label { font-size: 1.1rem; }
-    .brand-note { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
-    .topnav { display: flex; gap: 1.5rem; }
-    .topnav a { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; transition: color 0.2s; }
-    .topnav a:hover, .topnav a.active { color: var(--accent); }
-    .theme-toggle { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
-
-    /* LAYOUT */
-    .assignment-layout { display: flex; max-width: 1400px; margin: 0 auto; padding-top: 4.5rem; }
-    .side-rail-nav { width: 240px; position: sticky; top: 5.5rem; height: calc(100vh - 6rem); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; border-right: 1px solid var(--border); flex-shrink: 0; }
-    .side-rail-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
-    .side-rail-link:hover, .side-rail-link.is-active { background: rgba(56,189,248,0.1); color: var(--accent); }
-    .side-rail-icon svg { width: 18px; height: 18px; }
-    
-    .assignment-flow { flex: 1; padding: 2rem 3rem 6rem; min-width: 0; }
-    .section { margin-bottom: 4rem; scroll-margin-top: 6rem; }
-    
-    /* HERO */
-    .page-hero { display: flex; flex-direction: column; gap: 2rem; }
-    .eyebrow { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 1rem; }
-    .hero-card h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
-    .hero-card h1 span { color: var(--accent); }
-    .page-subtitle { font-size: 1.1rem; color: var(--muted); max-width: 700px; margin-bottom: 2rem; }
-    .button-row { display: flex; gap: 1rem; margin-bottom: 3rem; }
-    .button { padding: 0.6rem 1.4rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-    .button-primary { background: var(--accent); color: #000; border: none; }
-    .button-primary:hover { background: #7dd3fc; transform: translateY(-2px); }
-    .button-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
-    
-    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-    .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-    .meta-value { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 0.3rem; }
-
-    /* SECTION HEADERS & CARDS */
-    .section-title { font-size: 1.8rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-    .section-copy { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;}
-    .content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-bottom: 2rem; }
-    .card-kicker { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent2); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
-    .track-copy { color: var(--muted); margin-bottom: 1rem; }
-    .deliverable-note { margin-top: 1rem; padding: 1rem; background: rgba(56,189,248,0.05); border-left: 3px solid var(--accent); font-size: 0.9rem; font-style: italic; border-radius: 0 8px 8px 0; }
-
-    /* STUNNING TIMELINE PIPELINE */
-    .pipeline-container { display: flex; flex-direction: column; gap: 0; padding: 1rem 0; position: relative; margin: 2rem 0; }
-    .pipeline-stage { display: flex; gap: 1.5rem; position: relative; padding-bottom: 2.5rem; }
-    .pipeline-stage:last-child { padding-bottom: 0; }
-    .pipeline-stage:not(:last-child)::after { content: ''; position: absolute; left: 1.5rem; top: 3.5rem; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(56,189,248,0.1)); z-index: 0; }
-    .stage-icon { width: 3rem; height: 3rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); box-shadow: 0 0 15px rgba(56,189,248,0.2); z-index: 1; flex-shrink: 0; font-family: var(--font-mono); }
-    .stage-content { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; flex: 1; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-    .stage-content:hover { transform: translateX(5px); border-color: var(--accent); box-shadow: 0 8px 25px rgba(56,189,248,0.15); }
-    .stage-title { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text); }
-    .stage-desc { font-size: 0.9rem; color: var(--muted); }
-    .stage-badge { display: inline-block; padding: 0.2rem 0.6rem; background: rgba(56,189,248,0.1); color: var(--accent); border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-top: 0.8rem; font-family: var(--font-mono); }
-
-    /* CODE SAMPLE */
-    .code-sample { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
-    .code-sample-bar { display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
-    .code-sample-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
-    .code-sample-dots span:nth-child(1) { background: #ff5f56; }
-    .code-sample-dots span:nth-child(2) { background: #ffbd2e; }
-    .code-sample-dots span:nth-child(3) { background: #27c93f; }
-    .code-sample-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
-    .code-sample-copy { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
-    .code-sample-copy:hover { color: #fff; border-color: #fff; }
-    .code-sample pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: 0.85rem; font-family: var(--font-mono); }
-
-    /* FIGURES & TABLES */
-    .figure-stack-two { display: flex; gap: 2rem; margin: 2rem 0; }
-    .figure-frame { flex: 1; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #000; cursor: zoom-in; }
-    .figure-frame img { width: 100%; height: auto; display: block; opacity: 0.9; transition: opacity 0.2s; }
-    .figure-frame:hover img { opacity: 1; }
-    .figure-caption { text-align: center; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.8rem; }
-    .compare-table { width: 100%; border-collapse: collapse; text-align: left; margin: 1.5rem 0; }
-    .compare-table th, .compare-table td { padding: 1rem; border-bottom: 1px solid var(--border); }
-    .compare-table th { background: rgba(56,189,248,0.05); color: var(--accent); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; }
-
-    /* INTERACTIVE TABS */
-    .transfer-explorer { margin-top: 2rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .transfer-step-rail { display: flex; background: rgba(5,8,16,0.6); overflow-x: auto; padding: 1rem; border-bottom: 1px solid var(--border); }
-    .transfer-step-wrap { display: flex; align-items: center; }
-    .transfer-step { background: transparent; border: 1px solid transparent; color: var(--muted); text-align: left; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; min-width: 140px; }
-    .transfer-step:hover, .transfer-step.is-active { background: var(--surface); border-color: var(--accent); color: var(--text); }
-    .transfer-step-index { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); display: block; }
-    .transfer-step-title { font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem; }
-    .transfer-step-connector { padding: 0 0.5rem; color: var(--muted); font-size: 1.2rem; }
-    .transfer-detail-panel { display: none; padding: 2rem; background: var(--surface); animation: fadeIn 0.3s; }
-    .transfer-detail-panel.is-active { display: block; }
-    .transfer-detail-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
-
-    /* LIGHTBOX */
-    .image-lightbox[hidden] { display: none; }
-    .image-lightbox { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-    .image-lightbox-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-    .image-lightbox-shell { position: relative; z-index: 1001; display: flex; flex-direction: column; width: 100%; height: 100%; padding: 2rem; }
-    .image-lightbox-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
-    .image-lightbox-button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
-    .image-lightbox-image { max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto;}
-    .image-lightbox-caption { text-align: center; color: #fff; padding-top: 1rem; }
-    
-    @media (max-width: 992px) {
-      .assignment-layout { flex-direction: column; }
-      .side-rail-nav { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); }
-      .assignment-flow { padding: 2rem 1rem; }
-      .story-grid { grid-template-columns: 1fr; }
-      .figure-stack-two { flex-direction: column; }
-    }
-  </style>
-</head>
-
-<body data-theme="dark">
-  <header class="topbar">
-    <a class="brand" href="../index.html">
-      <span class="brand-copy">
-        <p class="brand-label">3AIPRO · Multimodal</p>
-        <p class="brand-note">Multimodal Classification Report (Assignment 1)</p>
-      </span>
-    </a>
-    <nav class="topnav">
-      <a href="../index.html">Home</a>
-      <a href="image.html">Image</a>
-      <a href="text.html">Text</a>
-      <a href="multimodal.html" class="active">Multimodal</a>
-    </nav>
-    <div class="topbar-actions">
-      <button class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
+    <div class="story-block">
+      <p class="card-kicker">Problem statement</p>
+      <h3 class="card-title">Objective</h3>
+      <p class="track-copy">
+        The goal is to classify images into 5 semantic categories:
+        <code>animal, vehicle, person, food, indoor</code>.
+        Since the dataset is multimodal, both image and caption distributions must be analyzed.
+      </p>
     </div>
-  </header>
 
-  <main id="main-content" class="assignment-layout">
-    
-    <aside class="side-rail-nav">
-      <a class="side-rail-link" href="#overview" data-section-link="overview"><span class="side-rail-icon">■</span><span class="side-rail-label">Overview</span></a>
-      <a class="side-rail-link" href="#multimodal-eda" data-section-link="multimodal-eda"><span class="side-rail-icon">■</span><span class="side-rail-label">EDA & Dataset</span></a>
-      <a class="side-rail-link" href="#multimodal-pipeline" data-section-link="multimodal-pipeline"><span class="side-rail-icon">■</span><span class="side-rail-label">Data Pipeline</span></a>
-      <a class="side-rail-link" href="#multimodal-models" data-section-link="multimodal-models"><span class="side-rail-icon">■</span><span class="side-rail-label">Models Setup</span></a>
-      <a class="side-rail-link" href="#multimodal-results" data-section-link="multimodal-results"><span class="side-rail-icon">■</span><span class="side-rail-label">Results</span></a>
-      <a class="side-rail-link" href="#multimodal-extensions" data-section-link="multimodal-extensions"><span class="side-rail-icon">■</span><span class="side-rail-label">Extensions</span></a>
-    </aside>
-
-    <div class="assignment-flow">
-      
-      <section id="overview" class="section page-hero">
-        <article class="hero-card">
-          <p class="eyebrow">Multimodal Track</p>
-          <h1>Zero-shot vs Few-shot on <span>COCO Karpathy</span>.</h1>
-          <p class="page-subtitle">Evaluating multimodal classification capabilities by aligning Text and Image semantic spaces using the CLIP (Contrastive Language-Image Pretraining) foundation model.</p>
-          
-          <div class="button-row">
-            <a class="button button-primary" href="#multimodal-eda">View Detailed Report</a>
-            <a class="button button-secondary" href="../index.html">Back to Home</a>
-          </div>
-          
-          <div class="hero-meta">
-            <div><p class="meta-label">Executed by</p><p class="meta-value">Doan Anh Khoi (2352601)</p></div>
-            <div><p class="meta-label">Dataset</p><p class="meta-value">COCO Karpathy</p></div>
-            <div><p class="meta-label">Models used</p><p class="meta-value">CLIP (ViT-Base-Patch32)</p></div>
-            <div><p class="meta-label">Extensions</p><p class="meta-value">TTA, Error Visualization</p></div>
-          </div>
-        </article>
-      </section>
-
-      <section id="multimodal-eda" class="section">
-        <div class="section-head">
-          <h2 class="section-title">1. Problem and dataset exploration (EDA)</h2>
-          <p class="section-copy">Analyzing the multimodal dataset and the Weak Supervision labeling method.</p>
-        </div>
-        <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Problem statement</p>
-              <h3 class="card-title">Objective</h3>
-              <p class="track-copy">Multimodal models require cross-modal alignment between Text and Image semantic spaces. The primary task is to classify images into 5 major semantic groups: <code>animal, vehicle, person, food, indoor</code>.</p>
-            </div>
-            <div class="story-block">
-              <p class="card-kicker">Dataset Highlights</p>
-              <h3 class="card-title">Caption Processing & Labeling</h3>
-              <ul class="mini-list" style="color: var(--muted)">
-                <li>Dataset source: <code>yerevann/coco-karpathy</code> via HuggingFace Datasets.</li>
-                <li><strong>Labeling via Captions:</strong> We defined specific keyword mapping for the 5 classes. The <code>get_label_from_captions</code> function scans the original text captions to automatically assign class labels (Weak Supervision).</li>
-                <li>Images are downloaded directly from URLs, aggressively filtering out corrupted links to curate 800 clean samples.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_multimodal_eda.png" alt="COCO Examples">
-          </div>
-          <p class="figure-caption">Figure 1: Examples from the COCO dataset alongside their ground-truth descriptive captions used for weak-supervision labeling.</p>
-        </article>
-      </section>
-
-      <section id="multimodal-pipeline" class="section">
-        <div class="section-head">
-          <h2 class="section-title">2. Dataset, DataLoader, and Preprocessing Setup</h2>
-          <p class="section-copy">Multi-Crop image processing pipeline designed specifically for the CLIP architecture.</p>
-        </div>
-        <article class="content-card">
-          <h3 class="card-title">Multi-Crop Augmentation Pipeline</h3>
-          <p class="track-copy">To enhance model robustness during feature extraction, images are not fed into CLIP in their raw form exclusively. Instead, we implement a powerful <strong>Multi-Crop</strong> strategy to capture various spatial perspectives.</p>
-          
-          <div class="pipeline-container">
-            <div class="pipeline-stage">
-              <div class="stage-icon">01</div>
-              <div class="stage-content">
-                <div class="stage-title">Generate Image Variants (Crops)</div>
-                <div class="stage-desc">From a single original image, we generate 7 variants: Original, Center crop, Horizontal Flip, and 4 Corner crops.</div>
-                <div class="stage-badge">PIL.Image</div>
-              </div>
-            </div>
-            <div class="pipeline-stage">
-              <div class="stage-icon">02</div>
-              <div class="stage-content">
-                <div class="stage-title">CLIP Processor</div>
-                <div class="stage-desc">Passing each image through the <code>CLIPProcessor</code> to convert it into the expected tensor dimensions for the vision encoder.</div>
-                <div class="stage-badge">transformers</div>
-              </div>
-            </div>
-            <div class="pipeline-stage">
-              <div class="stage-icon">03</div>
-              <div class="stage-content">
-                <div class="stage-title">Feature Extraction & Normalization</div>
-                <div class="stage-desc">Extracting the embedding vector and applying L2 Normalization to scale the vector length to 1, perfectly prepping it for Cosine Similarity computation.</div>
-                <div class="stage-badge">F.normalize</div>
-              </div>
-            </div>
-            <div class="pipeline-stage">
-              <div class="stage-icon">04</div>
-              <div class="stage-content">
-                <div class="stage-title">Test-Time Augmentation (TTA) Setup</div>
-                <div class="stage-desc">Retaining the feature vectors of all 7 crops (without averaging them yet) to facilitate the Majority Voting mechanism in the evaluation step.</div>
-                <div class="stage-badge">np.array(feats)</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Feature Extraction)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
-            </div>
-<pre><code class="language-python">def extract_feature_multi(image):
-    images = [image] # original
-    images.append(image.crop((image.width//4, image.height//4, 3*image.width//4, 3*image.height//4))) # center
-    images.append(image.transpose(Image.FLIP_LEFT_RIGHT)) # flip
-    # corner crops...
-    
-    feats = []
-    for img in images:
-        inputs = processor(images=img, return_tensors="pt").to(device)
-        with torch.no_grad():
-            outputs = model.get_image_features(**inputs)
-            feat = outputs.pooler_output if hasattr(outputs, "pooler_output") else outputs
-            feat = F.normalize(feat, dim=-1)
-        feats.append(feat.cpu().numpy().squeeze())
-    return np.array(feats)</code></pre>
-          </div>
-        </article>
-      </section>
-
-      <section id="multimodal-models" class="section">
-        <div class="section-head">
-          <h2 class="section-title">3. Model building, evaluation, and comparison</h2>
-          <p class="section-copy">Comparing the Zero-shot inference capabilities versus prototype-based Few-shot learning of CLIP.</p>
-        </div>
-        <article class="content-card">
-          <p class="card-kicker">Interactive Pipeline</p>
-          <h3 class="card-title">Zero-shot vs Few-shot Mechanisms</h3>
-          
-          <div class="transfer-explorer" data-transfer-explorer>
-            <div class="transfer-step-rail" role="tablist">
-              <div class="transfer-step-wrap">
-                <button class="transfer-step is-active" type="button" role="tab" aria-controls="panel-text" id="tab-input">
-                  <span class="transfer-step-index">STEP 1</span><span class="transfer-step-title">Reference Space</span>
-                </button><span class="transfer-step-connector">→</span>
-              </div>
-              <div class="transfer-step-wrap">
-                <button class="transfer-step" type="button" role="tab" aria-controls="panel-sim" id="tab-backbone">
-                  <span class="transfer-step-index">STEP 2</span><span class="transfer-step-title">Cosine Similarity</span>
-                </button><span class="transfer-step-connector">→</span>
-              </div>
-              <div class="transfer-step-wrap">
-                <button class="transfer-step" type="button" role="tab" aria-controls="panel-vote" id="tab-eval">
-                  <span class="transfer-step-index">STEP 3</span><span class="transfer-step-title">TTA Voting</span>
-                </button>
-              </div>
-            </div>
-            
-            <div class="transfer-detail-shell">
-              <div class="transfer-detail-panel is-active" id="panel-text" role="tabpanel">
-                <h4 class="transfer-detail-title">Constructing the Reference Space</h4>
-                <p><strong>Zero-shot:</strong> Pass the prompt template "a photo of a {class}" through CLIP's Text Encoder to obtain reference semantic vectors.<br>
-                <strong>Few-shot:</strong> Compute the mean of image feature vectors for each class in the Training set (Prototype Learning), establishing the class centroid reference vector.</p>
-              </div>
-              <div class="transfer-detail-panel" id="panel-sim" role="tabpanel">
-                <h4 class="transfer-detail-title">Computing Similarity</h4>
-                <p>Calculate the dot product between the Test Image Features and the Text/Prototype Features. Because both vectors are L2-normalized, the dot product mathematically equals Cosine Similarity.</p>
-              </div>
-              <div class="transfer-detail-panel" id="panel-vote" role="tabpanel">
-                <h4 class="transfer-detail-title">TTA Voting Mechanism</h4>
-                <p>During inference, each test image possesses 7 distinct feature vectors (from the 7 crops). We perform similarity matching for all 7 instances independently and select the most frequently predicted label (Majority Voting) as the final outcome.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="soft-divider"></div>
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Few-shot Prototypes)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
-            </div>
-<pre><code class="language-python"># Build prototypes for Few-shot Learning
-prototypes = []
-for c in range(num_classes):
-    class_feats = X_train_fixed[y_train == c]
-    proto = class_feats.mean(axis=0)
-    proto = proto / (np.linalg.norm(proto) + 1e-8)
-    prototypes.append(proto)
-prototypes = np.array(prototypes)
-
-# Predict with TTA Mean Aggregation
-fs_predictions = []
-for feats in X_test:
-    feats = feats / np.linalg.norm(feats, axis=1, keepdims=True)
-    logits = feats @ prototypes.T
-    logits_mean = logits.mean(axis=0)
-    pred = np.argmax(logits_mean)
-    fs_predictions.append(pred)</code></pre>
-          </div>
-        </article>
-      </section>
-
-      <section id="multimodal-results" class="section">
-        <div class="section-head">
-          <h2 class="section-title">4. Experimental Results & Analysis</h2>
-          <p class="section-copy">Analyzing the advantages of each approach and the impact of Noisy Labels.</p>
-        </div>
-        <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Performance Summary</p>
-              <h3 class="card-title">Zero-shot vs Few-shot</h3>
-              <p class="track-copy">The Few-shot method outperforms the Zero-shot approach because it leverages actual labeled support samples from the dataset to adjust the feature space closer to the COCO distribution, rather than relying solely on generalized text alignment.</p>
-              <div class="compare-table">
-                <table>
-                  <thead>
-                    <tr><th>Method</th><th>Support Samples/Class</th><th>Core Principle</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td><strong>Zero-Shot (TTA)</strong></td><td>0</td><td>Text Embedding Cosine Similarity + Voting</td></tr>
-                    <tr><td><strong>Few-Shot (TTA)</strong></td><td>~ 80 (from Train)</td><td>Image Prototype Mean Pooling + Similarity</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="story-block">
-              <p class="card-kicker">Error Analysis</p>
-              <h3 class="card-title">Explaining the Discrepancies</h3>
-              <ul class="mini-list" style="color: var(--muted)">
-                <li><strong>Noisy Labels:</strong> Labels are auto-generated via Keyword Matching from captions. For example, an image displaying both a person and a dog might be captioned focusing on the "dog", thus mislabeling it as 'Animal' and confusing the model's metrics.</li>
-                <li><strong>Class Confusion:</strong> Significant overlap and confusion consistently occur between the 'animal', 'vehicle', and 'person' classes due to complex visual compositions.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="figure-stack-two">
-            <div class="figure-frame"><img src="placeholder_multimodal_cm.png" alt="Confusion Matrices"></div>
-            <div class="figure-frame"><img src="placeholder_multimodal_f1.png" alt="Per-class F1 Score"></div>
-          </div>
-          <p class="figure-caption">Figures 2 & 3: Comparison of Confusion Matrices and Per-class F1-Scores between Zero-shot and Few-shot.</p>
-        </article>
-      </section>
-
-      <section id="multimodal-extensions" class="section">
-        <div class="section-head">
-          <h2 class="section-title">5. Other extension reports</h2>
-          <p class="section-copy">Implementing Test-Time Augmentation (TTA) and Qualitative Error Analysis.</p>
-        </div>
-        <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Test-Time Augmentation (TTA)</p>
-              <h3 class="card-title">Enhancing Robustness</h3>
-              <p class="track-copy">A crucial extension for extra credit: Instead of evaluating an image only once, TTA allows the model to synthesize information from multiple spatial perspectives (Crops) of the exact same image. Applying Majority Voting across these crops mitigates noise and yields far more accurate predictions.</p>
-            </div>
-            
-            <div class="story-block">
-              <p class="card-kicker">Qualitative Visualization</p>
-              <h3 class="card-title">Simulating Predictions</h3>
-              <p class="track-copy">The <code>plot_results</code> script directly fetches visual examples where the Zero-shot approach failed but the Few-shot approach succeeded. This effectively demonstrates the immense power of computing Prototypes from actual Training distribution data.</p>
-            </div>
-          </div>
-          
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Visualization)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
-            </div>
-<pre><code class="language-python"># Find one correct and one incorrect example from Zero-Shot
-correct_idx = np.where(zs_predictions == y_test)[0][0]
-incorrect_idx = np.where(zs_predictions != y_test)[0][0]
-
-print("\nVisualizing Sample Predictions (Zero-Shot vs Few-Shot):")
-plot_results(test_data, y_test, zs_predictions, fs_predictions, [correct_idx, incorrect_idx])</code></pre>
-          </div>
-          
-          <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_multimodal_vis.png" alt="Qualitative Results">
-          </div>
-          <p class="figure-caption">Figure 4: Qualitative visualization of predictions on the COCO dataset (True Label vs Zero-shot vs Few-shot).</p>
-
-        </article>
-      </section>
-
+    <div class="story-block">
+      <p class="card-kicker">Dataset Insights</p>
+      <h3 class="card-title">Key Observations</h3>
+      <ul class="mini-list" style="color: var(--muted)">
+        <li>Images mostly follow resolution ~640×480</li>
+        <li>Strong landscape bias in aspect ratio</li>
+        <li>Captions are short (8–12 words)</li>
+        <li>High frequency of "person"-related words</li>
+      </ul>
     </div>
-  </main>
 
-  <div class="image-lightbox" data-image-lightbox hidden>
-    <div class="image-lightbox-backdrop" data-image-lightbox-close></div>
-    <div class="image-lightbox-shell">
-      <div class="image-lightbox-toolbar">
-        <button class="image-lightbox-button" data-image-lightbox-close>Close</button>
-      </div>
-      <div class="image-lightbox-stage">
-        <img class="image-lightbox-image" data-image-lightbox-image src="" alt="">
-      </div>
-      <p class="image-lightbox-caption" data-image-lightbox-caption></p>
-    </div>
   </div>
 
-  <footer class="topbar" style="position:static; margin-top:2rem; flex-direction:column; gap:1rem;">
-    <div class="brand"><p class="brand-label">3AIPRO · Deep Learning</p></div>
-    <p style="color:var(--muted); font-size:0.85rem">Deep Learning and Its Applications (CO3133)</p>
-  </footer>
+  <!-- WIDTH + HEIGHT -->
+  <div class="figure-stack-two">
+    <div class="figure-frame">
+      <img src="images/width.png">
+    </div>
+    <div class="figure-frame">
+      <img src="images/height.png">
+    </div>
+  </div>
+  <p class="figure-caption">
+    Distribution of image width and height.
+  </p>
 
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
-  
-  <script>
-    // THEME TOGGLE
-    const root = document.documentElement;
-    const themeBtn = document.querySelector('[data-theme-toggle]');
-    themeBtn.addEventListener('click', () => {
-      root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-    });
+  <div class="deliverable-note">
+    Most images cluster around <b>640×480</b>, indicating standardized data.
+    This consistency helps reduce distortion during resizing and improves model stability.
+  </div>
 
-    // TABS INTERACTIVE (PIPELINE)
-    const tabs = document.querySelectorAll('.transfer-step');
-    const panels = document.querySelectorAll('.transfer-detail-panel');
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('is-active'));
-        panels.forEach(p => { p.classList.remove('is-active'); p.hidden = true; });
-        tab.classList.add('is-active');
-        document.getElementById(tab.getAttribute('aria-controls')).classList.add('is-active');
-        document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
-      });
-    });
+  <!-- ASPECT RATIO -->
+  <div class="figure-frame" style="margin-top: 2rem;">
+    <img src="images/ratio.png">
+  </div>
+  <p class="figure-caption">
+    Aspect ratio distribution.
+  </p>
 
-    // COPY CODE
-    document.querySelectorAll('[data-copy-code]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const code = btn.closest('.code-sample').querySelector('code').innerText;
-        await navigator.clipboard.writeText(code);
-        btn.innerText = 'Copied!';
-        setTimeout(() => btn.innerText = 'Copy', 1500);
-      });
-    });
+  <div class="deliverable-note">
+    Most images fall in the range <b>1.3–1.5</b> (landscape).
+    Very few portrait images exist → dataset bias toward horizontal scenes.
+    <br><br>
+    ⚠️ This suggests center cropping may lose important information → better to use TTA or random crops.
+  </div>
 
-    // SCROLLSPY
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          document.querySelectorAll('.side-rail-link[data-section-link]').forEach(link => {
-            link.classList.toggle('is-active', link.dataset.sectionLink === entry.target.id);
-          });
-        }
-      });
-    }, { rootMargin: "-20% 0px -60% 0px" });
-    document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+  <!-- CAPTION LENGTH -->
+  <div class="figure-frame" style="margin-top: 2rem;">
+    <img src="images/length.png">
+  </div>
+  <p class="figure-caption">
+    Caption length distribution.
+  </p>
 
-    // LIGHTBOX
-    const lightbox = document.querySelector('[data-image-lightbox]');
-    const lbImg = document.querySelector('[data-image-lightbox-image]');
-    const lbCaption = document.querySelector('[data-image-lightbox-caption]');
-    document.querySelectorAll('.figure-frame img').forEach(img => {
-      img.addEventListener('click', () => {
-        lbImg.src = img.src;
-        lbCaption.innerText = img.closest('.figure-frame').nextElementSibling?.innerText || "";
-        lightbox.hidden = false;
-      });
-    });
-    document.querySelectorAll('[data-image-lightbox-close]').forEach(btn => {
-      btn.addEventListener('click', () => lightbox.hidden = true);
-    });
-  </script>
-</body>
-</html>
+  <div class="deliverable-note">
+    Most captions contain <b>8–12 words</b>, showing concise but meaningful descriptions.
+    <br><br>
+    Short captions → strong alignment with CLIP  
+    Long captions → richer context but introduce noise
+  </div>
+
+  <!-- WORD FREQUENCY -->
+  <div class="figure-frame" style="margin-top: 2rem;">
+    <img src="images/top_word.png">
+  </div>
+  <p class="figure-caption">
+    Most frequent words in captions.
+  </p>
+
+  <div class="deliverable-note">
+    Words like <b>“man”, “people”, “standing”</b> dominate,
+    indicating strong bias toward the <b>Person</b> category.
+    <br><br>
+    ⚠️ This may cause the model to over-predict "Person".
+  </div>
+
+  <!-- SAMPLE -->
+  <div class="figure-frame" style="margin-top: 2rem;">
+    <img src="images/sample.png">
+  </div>
+  <p class="figure-caption">
+    Sample dataset images.
+  </p>
+
+  <div class="deliverable-note">
+    Many images contain multiple objects (e.g., person + food, person + animal).
+    <br><br>
+    ⚠️ This introduces label ambiguity and makes classification more difficult.
+  </div>
+
+</article>
