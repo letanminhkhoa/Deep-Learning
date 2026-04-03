@@ -195,7 +195,7 @@
       <section id="overview" class="section page-hero">
         <article class="hero-card">
           <p class="eyebrow">Image Track</p>
-          <h1>CNN vs ViT on <span>CIFAR-10</span>.</h1>
+          <h1>CNN vs ViT on <span>flower classification dataset</span>.</h1>
           <p class="page-subtitle">Comprehensive report on multi-class image classification. Comparing the feature extraction capabilities and performance of Convolutional Neural Networks and Vision Transformers.</p>
           
           <div class="button-row">
@@ -205,7 +205,7 @@
           
           <div class="hero-meta">
             <div><p class="meta-label">Executed by</p><p class="meta-value">Thai Quang Du (2252136)</p></div>
-            <div><p class="meta-label">Dataset</p><p class="meta-value">CIFAR-10</p></div>
+            <div><p class="meta-label">Dataset</p><p class="meta-value">flower classification</p></div>
             <div><p class="meta-label">Models used</p><p class="meta-value">CNN & ViT</p></div>
             <div><p class="meta-label">Extensions</p><p class="meta-value">Grad-CAM, Ensemble</p></div>
           </div>
@@ -215,7 +215,7 @@
       <section id="image-eda" class="section">
         <div class="section-head">
           <h2 class="section-title">1. Problem and dataset exploration (EDA)</h2>
-          <p class="section-copy">Analyzing the dataset characteristics and handling class distribution.</p>
+          <p class="section-copy">Analyzing the dataset characteristics, handling imbalanced class distribution and data preprocessing.</p>
         </div>
         <article class="content-card">
           <div class="story-grid">
@@ -230,14 +230,41 @@
               <ul class="mini-list" style="color: var(--muted)">
                 <li>Data is fetched via Kaggle API / Cloud using <code>download_dataset</code>.</li>
                 <li>The dataset is split into <strong>80% Train</strong> and <strong>20% Eval</strong> using PyTorch's <code>random_split</code>.</li>
+                <li>Although most images in the dataset are 256x256 pixels, many are of varying sizes and orientations. Preprocessing and transformation steps are applied uniformly.</li>
                 <li>To combat Class Imbalance, we calculated class weights and integrated <code>WeightedRandomSampler</code> into the DataLoader.</li>
               </ul>
             </div>
           </div>
           <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_eda.png" alt="Dataset Distribution">
+            <img src="images/image_result/astilbe_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/bellflower_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/black_eyed_susan.png" alt="Dataset Distribution">
+            <img src="images/image_result/calendula_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/california_poppy_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/carnation_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/common_daisy.png" alt="Dataset Distribution">
+            <img src="images/image_result/coreopsis_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/dandelion_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/iris_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/rose_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/sunflower_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/tulip_sample.png" alt="Dataset Distribution">
+            <img src="images/image_result/water_lilly_sample.png" alt="Dataset Distribution">
           </div>
-          <p class="figure-caption">Figure 1: Distribution of samples across classes in the training dataset.</p>
+          <p class="figure-caption">Figure 1: Random samples from each class in the training dataset. Some flower have different sizes, color patterns in its appearance or capture in strange angles and unique backgrounds, making classification challenging.</p>
+          <div class="figure-frame" style="margin-top: 2rem;">
+            <img src="images/image_result/class_distribution.png" alt="Dataset Distribution">
+          </div>
+          <p class="figure-caption">Figure 2: Distribution of samples across classes in the dataset. There is clearly imbalanced classes present, which the least being Astilbe (726 samples) and heighest being Iris (1041 samples).</p>
+          <div class="figure-frame" style="margin-top: 2rem;">
+            <img src="images/image_result/resolution_distribution.png" alt="Dataset Distribution">
+          </div>
+          <p class="figure-caption">Figure 3: Distribution of image resolutions in the dataset. Most images are 256x256 pixels, but there is variation in size and orientation.</p>
+        <div class="figure-frame" style="margin-top: 2rem;">
+            <img src="images/image_result/class_distribution_after_weightedSampling.png" alt="Dataset Distribution">
+          </div>
+          <p class="figure-caption">Figure 4: Distribution of samples across classes in the training dataset after applying WeightedRandomSampler. The class imbalance has been reduced, which the least being Astilbe (777 samples) and heighest being Iris (830 samples), lower class difference than before.</p>
+        
         </article>
       </section>
 
@@ -252,7 +279,15 @@
           
           <div class="pipeline-container">
             <div class="pipeline-stage">
-              <div class="stage-icon">01</div>
+              <div class="stage-icon">1</div>
+              <div class="stage-content">
+                <div class="stage-title">Define custom dataset</div>
+                <div class="stage-desc">Define dataset class that inherits from <code>torch.utils.data.Dataset</code> and implements the <code>__getitem__</code> methods to output both preprocessed, original images and labels. <code>ImageDataset</code> is responsible for loading images and their corresponding labels from the dataset directory.</div>
+                <div class="stage-badge">ImageDataset</div>
+              </div>
+            </div>
+            <div class="pipeline-stage">
+              <div class="stage-icon">2</div>
               <div class="stage-content">
                 <div class="stage-title">Raw Data Loading</div>
                 <div class="stage-desc">Images are loaded from disk and mapped to their respective labels using the <code>ImageDataset</code> class.</div>
@@ -260,7 +295,7 @@
               </div>
             </div>
             <div class="pipeline-stage">
-              <div class="stage-icon">02</div>
+              <div class="stage-icon">3</div>
               <div class="stage-content">
                 <div class="stage-title">Data Splitting & Sampling</div>
                 <div class="stage-desc">Applying an 80/20 train-evaluation split. <code>WeightedRandomSampler</code> is injected here to balance minority classes during training.</div>
@@ -268,7 +303,7 @@
               </div>
             </div>
             <div class="pipeline-stage">
-              <div class="stage-icon">03</div>
+              <div class="stage-icon">4</div>
               <div class="stage-content">
                 <div class="stage-title">Transformation & Normalization</div>
                 <div class="stage-desc">All images are resized to <code>(224, 224)</code> using <strong>BICUBIC interpolation</strong> to preserve high-frequency details. Tensors are normalized to the [-1, 1] range using mean=[0.5] and std=[0.5].</div>
@@ -276,7 +311,7 @@
               </div>
             </div>
             <div class="pipeline-stage">
-              <div class="stage-icon">04</div>
+              <div class="stage-icon">5</div>
               <div class="stage-content">
                 <div class="stage-title">PyTorch DataLoaders</div>
                 <div class="stage-desc">Batched, shuffled, and sent to the GPU (CUDA) for optimal training throughput.</div>
@@ -339,7 +374,8 @@
               <div class="transfer-detail-panel is-active" id="panel-backbone" role="tabpanel">
                 <h4 class="transfer-detail-title">Feature Extraction (CNN vs ViT)</h4>
                 <p><strong>CNN:</strong> Uses local convolutional filters to extract spatial hierarchies (edges to complex shapes).<br>
-                <strong>ViT:</strong> Splits the image into patches, flattens them, and applies Self-Attention to capture global context.</p>
+                <strong>ViT:</strong> Splits the image into patches, flattens them, and applies Self-Attention to capture global context.<br>
+                For this project, we going to use Pretrained models of both CNN model (which is ResNet18) and ViT model (which is ViT-B/16) and compare their performance on the same setting (dataset, hyperparameters, processes,...).</p>
               </div>
               <div class="transfer-detail-panel" id="panel-train" role="tabpanel">
                 <h4 class="transfer-detail-title">Unified Training (ulti.py)</h4>
@@ -380,7 +416,34 @@
             all_probs.append(probs.cpu())
             y_true.extend(label.tolist())
             y_pred.extend(predicted.tolist())
-    return current_loss, correct_pred/total_pred, torch.cat(all_probs).numpy(), wrong_examples, y_true, y_pred</code></pre>
+    return current_loss, correct_pred/total_pred, torch.cat(all_probs).numpy(), wrong_examples, y_true, y_pred
+  def train(model,train_loader,criterion,optimizer,device,epochs,val_loader=None):
+    model.train()
+    train_loss, train_accuracy = [], []
+    val_loss, val_accuracy = [], []
+    for epoch in range(epochs):
+        correct_pred, total_pred, current_train_loss = 0,0,0
+        for image, label, _ in tqdm(train_loader,desc=f"Training {epoch+1}/{epochs}"):
+            image, label = image.to(device),label.to(device)
+            optimizer.zero_grad()
+            output = model(image)
+            loss = criterion(output,label)
+            current_train_loss += loss.item()
+            _, predicted = torch.max(output, 1)
+            correct_pred += (predicted == label).sum().item()
+            total_pred += label.size(0)
+            loss.backward()
+            optimizer.step()
+        train_loss.append(current_train_loss)
+        train_accuracy.append(correct_pred/total_pred)
+        if val_loader is not None:
+            current_val_loss, current_val_acc, _, _, _, _ = evaluate(model,val_loader,criterion,device)
+            val_loss.append(current_val_loss)
+            val_accuracy.append(current_val_acc)
+            print(f"""epoch: [{epoch+1}/{epochs}], train loss: {current_train_loss:4f}, train acc: {train_accuracy[-1]:4f}, val loss: {current_val_loss:4f}, val acc: {current_val_acc:4f}""")
+        else:
+            print(f"""epoch: [{epoch+1}/{epochs}], train loss: {current_train_loss:4f}, train acc: {train_accuracy[-1]:4f}""")
+    return train_loss, train_accuracy, val_loss, val_accuracy</code></pre>
           </div>
         </article>
       </section>
@@ -402,8 +465,8 @@
                     <tr><th>Model</th><th>Architecture</th><th>Accuracy</th><th>Remarks</th></tr>
                   </thead>
                   <tbody>
-                    <tr><td><strong>CNN</strong></td><td>Convolutional</td><td>--%</td><td>Fast convergence, high translation invariance.</td></tr>
-                    <tr><td><strong>ViT</strong></td><td>Transformer</td><td>--%</td><td>Longer training, better global context understanding.</td></tr>
+                    <tr><td><strong>CNN</strong></td><td>Convolutional</td><td>90.68%</td><td>Fast convergence, high translation invariance.</td></tr>
+                    <tr><td><strong>ViT</strong></td><td>Transformer</td><td>93.81%</td><td>Longer training, better global context understanding.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -416,10 +479,20 @@
           </div>
           
           <div class="figure-stack-two">
-            <div class="figure-frame"><img src="placeholder_confusion_matrix.png" alt="Confusion Matrix"></div>
-            <div class="figure-frame"><img src="placeholder_roc_curve.png" alt="ROC Curve"></div>
+            <div class="figure-frame"><img src="images/image_result/cnn_confusion_matrix.png" alt="Confusion Matrix"></div>
+            <div class="figure-frame"><img src="images/image_result/vit_16_b.png" alt="Confusion Matrix"></div>
           </div>
-          <p class="figure-caption">Figures 2 & 3: Confusion Matrix and ROC/AUC Curves.</p>
+          <p class="figure-caption">Figures 5 & 6: Confusion Matrix for CNN (left) and ViT (right). It Seem that both models seem to misclassify calendula for coreopsis. In addiontion, while ViT model only have 1 misclassification class, CNN model confuse more classes (e.g., Calendula for California Poppy and Coreopsis, Carnation and Iris, Iris for Bellflower).</p>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/cnn_roc_curve.png" alt="ROC Curve"></div>
+            <div class="figure-frame"><img src="images/image_result/vit_roc_curve.png" alt="ROC Curve"></div>
+          </div>
+          <p class="figure-caption">Figures 7 & 8: ROC Curves for CNN (left) and ViT (right). As predicted from the confusion matrices, the ViT model demonstrates superior performance in distinguishing between classes. Furthermore, Coreopsis shows the lowest AUC value for both models.</p>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/train_valuation_loss.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/train_valuation_accuracy.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <p class="figure-caption">Figures 7 & 8: Training and Validation Loss (left) and Accuracy (right) for CNN and ViT models. In general, all model loss curves downward and accuracy increases but slower over time. While ViT model shows better generalization and may still improve through more training, CNN model has a higher risk of overfitting with fluctuating accuracy at the end.</p>
         </article>
       </section>
 
@@ -445,6 +518,46 @@
           <div class="code-sample">
             <div class="code-sample-bar">
               <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">main.py (Grad-CAM)</span>
+              <button class="code-sample-copy" data-copy-code>Copy</button>
+            </div>
+<pre><code class="language-python">def reshape_transform(tensor):
+    if isinstance(tensor, tuple):
+        tensor = tensor[0]
+    tensor = tensor[:, 1:, :]
+    h = w = int(tensor.shape[1] ** 0.5)
+    tensor = tensor.reshape(tensor.size(0), h, w, tensor.size(2))
+    tensor = tensor.permute(0, 3, 1, 2)
+    return tensor
+def visualize_attention(model, input_tensor, target_layer,transform):
+    model.eval()
+    for param in model.parameters():
+        param.requires_grad = True
+    cam = GradCAM(model=model, target_layers=[target_layer], reshape_transform=transform)
+    grayscale_cam = cam(input_tensor=input_tensor.unsqueeze(0))[0]
+    return grayscale_cam
+
+for i in range(5):
+    target_layer = vit_model.encoder.layers[-1].ln_1
+    val_inputs, label, rgb_image = val_dataset[20 + i*30] 
+    rgb_image = mpimg.imread(rgb_image)
+    # rgb_image = rgb_image.cpu().numpy().transpose((1, 2, 0))
+    # rgb_image = Image.open(rgb_image).resize((224, 224))
+    rgb_image = cv2.resize(rgb_image, (224, 224))
+    plt.imshow(rgb_image)
+    plt.axis('off')
+    plt.show()
+    rgb_image = np.array(rgb_image).astype(np.float32) / 255.0
+    grayscale_cam = visualize_attention(vit_model, val_inputs, target_layer, reshape_transform)
+    visualization = show_cam_on_image(rgb_image,grayscale_cam,use_rgb=True)
+    plt.imshow(visualization)
+    plt.axis('off')
+    plt.show()</code></pre>
+          </div>
+
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
               <span class="code-sample-label">ulti.py (Ensemble Method)</span>
               <button class="code-sample-copy" data-copy-code>Copy</button>
             </div>
@@ -463,13 +576,37 @@
             
             y_true.extend(label.tolist())
             en_y_pred.extend(predicted.tolist())
-    return y_true, en_y_pred</code></pre>
+    return y_true, en_y_pred
+
+CNN_weights = 0.45
+ViT_weights = 0.55
+CNN_y_pred, ViT_y_pred, en_y_pred, y_true = ensemble_predict(cnn_model, vit_model, val_loader, CNN_weights, ViT_weights, device)</code></pre>
           </div>
-          
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/original_image1.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/grad-cam1.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/original_image2.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/grad-cam2.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/original_image3.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/grad-cam3.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/original_image4.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/grad-cam4.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <div class="figure-stack-two">
+            <div class="figure-frame"><img src="images/image_result/original_image5.png" alt="Training and Validation Loss"></div>
+            <div class="figure-frame"><img src="images/image_result/grad-cam5.png" alt="Training and Validation Accuracy"></div>
+          </div>
+          <p class="figure-caption">Figure 9: Grad-CAM heatmap illustrating the CNN's visual focus during classification. Some images did focus on the intended feature (image 1), some images focus on related regions instead (image 2,3,5 where it focus on lily pad and water more than the flower), Some image show no clear attention regions due to the model's uncertainty or image foreground taking the majority (image 4).</p>
           <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_gradcam.png" alt="Grad-CAM Visualization">
+            <img src="images/image_result/ensemble_method_confusion_matrix.png" alt="Grad-CAM Visualization">
           </div>
-          <p class="figure-caption">Figure 4: Grad-CAM heatmap illustrating the CNN's visual focus during classification.</p>
+          <p class="figure-caption">Figure 10: Confusion matrix for the ensemble method. Ensemble method shows slightly improved performance compared to individual models, achieve the accuracy of 95% compare to 94% in ViT model. Noticably, the ensemble method seem to inherit the mistake of CNN model with the most misclassifications class of Calendula to California Poppy and Coreopsis, though in the smaller sample number, likely due to the backup of ViT model.</p>
         </article>
       </section>
 
