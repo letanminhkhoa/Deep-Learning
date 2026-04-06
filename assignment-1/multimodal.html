@@ -190,8 +190,13 @@
       <a class="side-rail-link" href="#labeling" data-section-link="labeling"><span class="side-rail-icon">■</span>Semantic Labeling</a>
       <a class="side-rail-link" href="#features" data-section-link="features"><span class="side-rail-icon">■</span>Feature Strategy</a>
       <a class="side-rail-link" href="#classification" data-section-link="classification"><span class="side-rail-icon">■</span>Classification</a>
+      <a class="side-rail-link" href="#clip" data-section-link="clip"><span class="side-rail-icon">■</span>CLIP Architecture</a>
       <a class="side-rail-link" href="#results" data-section-link="results"><span class="side-rail-icon">■</span>Results & Bias</a>
+      <a class="side-rail-link" href="#failure-analysis" data-section-link="failure-analysis"><span class="side-rail-icon">■</span>Failure Analysis</a>
+
       <a class="side-rail-link" href="#extensions" data-section-link="extensions"><span class="side-rail-icon">■</span>Extensions</a>
+
+
     </aside>
 
     <div class="assignment-flow">
@@ -364,7 +369,7 @@ label = result['labels'][0]</code></pre>
           <div class="tab-panel-body is-active" id="tab_zs">
             <span class="card-kicker">Inference via Similarity</span>
             <h3 class="card-title">Native Image-Text Alignment</h3>
-            <p class="track-copy">This paradigm relies purely on CLIP's pre-trained weights. I project class labels into the text latent space using the prompt <i>"a photo of a [category]"</i>. Similarity is measured via dot product:</p>
+            <p class="track-copy">This paradigm relies purely on CLIP's pre-trained weights. I project class labels into the text latent space using the prompt <i>"a photo of a [class_name]"</i>. Similarity is measured via dot product:</p>
             <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: var(--font-mono); border: 1px solid var(--border);">
               Similarity = Image_Mean_Features @ Text_Embeddings.T
             </div>
@@ -428,6 +433,47 @@ Key Insight: Label quality has a greater impact on performance than model comple
 </p>
         </article>
       </section>
+      <section id="failure-analysis" class="section">
+  <h2 class="section-title">Failure Case Analysis</h2>
+
+  <p class="section-copy">
+    While the Few-shot model achieves higher quantitative performance, its effectiveness is highly dependent on the quality of pseudo-labels generated during the LLM-based labeling process.
+  </p>
+
+  <article class="content-card">
+
+    <div class="figure-frame wide-visual">
+      <img src="images/failure_cases.png" alt="Failure cases comparison">
+      <div class="figure-caption">
+        Comparison between Ground Truth (T), Zero-shot (ZS), and Few-shot (FS) predictions. 
+        Several cases show that Zero-shot predictions are more semantically accurate than Few-shot predictions.
+      </div>
+    </div>
+
+    <div style="margin-top:2rem">
+
+      <ul class="mini-list">
+        <li><strong>Label Noise:</strong> Few-shot learning relies on pseudo-labels and may overfit to incorrect annotations.</li>
+        <li><strong>Robust Semantics:</strong> Zero-shot CLIP does not depend on these labels and preserves semantic understanding.</li>
+        <li><strong>Error Propagation:</strong> Incorrect labels directly degrade supervised performance.</li>
+      </ul>
+
+      <p class="track-copy" style="margin-top:1.5rem">
+        Qualitative observations reveal that Zero-shot predictions can sometimes better align with actual image content, 
+        even when overall accuracy is lower. In contrast, the Few-shot model tends to follow noisy labels, 
+        leading to confident but incorrect predictions.
+      </p>
+
+      <div style="margin-top:2rem; padding:1.5rem; background: rgba(0,0,0,0.35); border-radius:12px;">
+        <p style="font-weight:600; font-size:1.2rem; margin:0;">
+          Key Insight: Label quality has a greater impact on performance than model complexity.
+        </p>
+      </div>
+
+    </div>
+
+  </article>
+</section>
 
       <!-- EXTENSIONS SECTION -->
       <section id="extensions" class="section">
