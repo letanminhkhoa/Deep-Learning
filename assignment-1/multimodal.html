@@ -1,22 +1,41 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- 
+    ============================================================================
+    PROJECT: MULTIMODAL SEMANTIC CLASSIFICATION
+    STUDENT: DOAN ANH KHOI (ID: 2352601)
+    UNIVERSITY: VIETNAM NATIONAL UNIVERSITY, HO CHI MINH CITY
+    FACULTY: COMPUTER SCIENCE AND ENGINEERING
+    DATE: APRIL 2026
+    ============================================================================
+  -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Assignment 1 | Multimodal Report</title>
-  <meta name="description" content="Multimodal classification report for Assignment 1, comparing Zero-shot and Few-shot with CLIP.">
+  <title>Assignment 1 | Multimodal Report - Doan Anh Khoi</title>
+  <meta name="description" content="Individual multimodal classification report by Doan Anh Khoi, comparing Zero-shot and Few-shot with CLIP.">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   
+  <!-- MATHJAX FOR LATEX RENDERING -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
-    /* COLOR PALETTE & TYPOGRAPHY - MULTIMODAL THEME (CYAN/SKY BLUE ACCENT) */
+    /* COLOR PALETTE & TYPOGRAPHY - TEXT THEME (PURPLE ACCENT) */
     :root {
       --bg: #050810;
       --surface: #0c1120;
-      --border: rgba(56,189,248,0.25);
-      --accent: #38bdf8;
-      --accent2: #4ade80;
+      --border: rgba(167,139,250,0.25);
+      --accent: #a78bfa;
+      --accent2: #38bdf8;
       --accent3: #6384ff;
       --text: #e8eaf6;
       --muted: #8b9bb4;
@@ -26,13 +45,13 @@
     }
     
     [data-theme="light"] {
-      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --accent: #0284c7; --text: #0f172a; --muted: #64748b; --card: #ffffff;
+      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --accent: #8b5cf6; --text: #0f172a; --muted: #64748b; --card: #ffffff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 15px; line-height: 1.65; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px); background-size: 64px 64px; }
+    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background-image: linear-gradient(rgba(167,139,250,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(167,139,250,0.03) 1px, transparent 1px); background-size: 64px 64px; }
     
     a { color: var(--accent); text-decoration: none; }
     ul { padding-left: 1.5rem; }
@@ -48,111 +67,124 @@
     .topnav a:hover, .topnav a.active { color: var(--accent); }
     .theme-toggle { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
 
-    /* LAYOUT */
-    .assignment-layout { display: flex; max-width: 1400px; margin: 0 auto; padding-top: 4.5rem; }
+    /* LAYOUT ENGINE */
+    .assignment-layout { display: flex; max-width: 1440px; margin: 0 auto; padding-top: 5rem; }
     .side-rail-nav { width: 240px; position: sticky; top: 5.5rem; height: calc(100vh - 6rem); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; border-right: 1px solid var(--border); flex-shrink: 0; }
     .side-rail-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
-    .side-rail-link:hover, .side-rail-link.is-active { background: rgba(56,189,248,0.1); color: var(--accent); }
-    .side-rail-icon svg { width: 18px; height: 18px; }
+    .side-rail-link:hover, .side-rail-link.is-active { background: rgba(167,139,250,0.1); color: var(--accent); }
+    .side-rail-icon { font-size: 1.1rem; }
     
-    .assignment-flow { flex: 1; padding: 2rem 3rem 6rem; min-width: 0; }
-    .section { margin-bottom: 4rem; scroll-margin-top: 6rem; }
+    .assignment-flow { flex: 1; padding: 2rem 5rem 8rem; min-width: 0; }
     
-    /* HERO */
+    /* ANIMATIONS (SCROLL REVEAL) */
+    .section { margin-bottom: 7rem; scroll-margin-top: 120px; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .section.is-revealed { opacity: 1; transform: translateY(0); }
+    
+    /* HERO STYLES */
     .page-hero { display: flex; flex-direction: column; gap: 2rem; }
-    .eyebrow { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 1rem; }
-    .hero-card h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 800; margin-bottom: 1.2rem; }
+    .hero-card h1 { font-size: 3.8rem; font-weight: 900; line-height: 1.05; margin-bottom: 1.5rem; letter-spacing: -2px; }
     .hero-card h1 span { color: var(--accent); }
-    .page-subtitle { font-size: 1.1rem; color: var(--muted); max-width: 700px; margin-bottom: 2rem; }
-    .button-row { display: flex; gap: 1rem; margin-bottom: 3rem; }
-    .button { padding: 0.6rem 1.4rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-    .button-primary { background: var(--accent); color: #000; border: none; }
-    .button-primary:hover { background: #7dd3fc; transform: translateY(-2px); }
-    .button-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .page-subtitle { font-size: 1.3rem; color: var(--muted); max-width: 850px; margin-bottom: 3rem; font-weight: 500; }
     
-    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-    .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-    .meta-value { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 0.3rem; }
+    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; padding: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+    .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+    .meta-value { font-size: 1.1rem; font-weight: 800; color: var(--text); }
 
-    /* SECTION HEADERS & CARDS */
-    .section-title { font-size: 1.8rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-    .section-copy { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;}
-    .content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-bottom: 2rem; }
-    .card-kicker { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent2); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
-    .track-copy { color: var(--muted); margin-bottom: 1rem; }
-    .deliverable-note { margin-top: 1rem; padding: 1rem; background: rgba(56,189,248,0.05); border-left: 3px solid var(--accent); font-size: 0.9rem; font-style: italic; border-radius: 0 8px 8px 0; }
+    /* CONTENT CARDS */
+    .section-title { font-size: 2.2rem; font-weight: 900; border-bottom: 2px solid var(--border); padding-bottom: 0.8rem; margin-bottom: 1.5rem; letter-spacing: -1px; }
+    .section-copy { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; }
+    .content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; }
+    .content-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 4px 0 0 4px; }
+    .card-kicker { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent2); font-weight: 800; text-transform: uppercase; margin-bottom: 0.8rem; display: block; }
+    .card-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 1.2rem; color: var(--text); }
+    .track-copy { color: var(--muted); margin-bottom: 1.5rem; font-size: 1.05rem; }
 
-    /* STUNNING TIMELINE PIPELINE */
-    .pipeline-container { display: flex; flex-direction: column; gap: 0; padding: 1rem 0; position: relative; margin: 2rem 0; }
-    .pipeline-stage { display: flex; gap: 1.5rem; position: relative; padding-bottom: 2.5rem; }
-    .pipeline-stage:last-child { padding-bottom: 0; }
-    .pipeline-stage:not(:last-child)::after { content: ''; position: absolute; left: 1.5rem; top: 3.5rem; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(56,189,248,0.1)); z-index: 0; }
-    .stage-icon { width: 3rem; height: 3rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); box-shadow: 0 0 15px rgba(56,189,248,0.2); z-index: 1; flex-shrink: 0; font-family: var(--font-mono); }
+    /* PIPELINE SYSTEM */
+    .pipeline-container { display: flex; flex-direction: column; gap: 1rem; margin: 3rem 0; }
+    .pipeline-stage { display: flex; gap: 2rem; position: relative; padding-bottom: 2.5rem; }
+    .pipeline-stage:not(:last-child)::after { content: ''; position: absolute; left: 1.5rem; top: 3.5rem; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(167,139,250,0.1)); z-index: 0; }
+    .stage-icon { width: 3rem; height: 3rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); box-shadow: 0 0 15px rgba(167, 139, 250, 0.2); z-index: 1; flex-shrink: 0; font-family: var(--font-mono); }
     .stage-content { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; flex: 1; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-    .stage-content:hover { transform: translateX(5px); border-color: var(--accent); box-shadow: 0 8px 25px rgba(56,189,248,0.15); }
-    .stage-title { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text); }
+    .stage-content:hover { transform: translateX(5px); border-color: var(--accent); box-shadow: 0 8px 25px rgba(167,139,250,0.15); }
     .stage-desc { font-size: 0.9rem; color: var(--muted); }
-    .stage-badge { display: inline-block; padding: 0.2rem 0.6rem; background: rgba(56,189,248,0.1); color: var(--accent); border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-top: 0.8rem; font-family: var(--font-mono); }
+    .stage-title { font-weight: 800; font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--text); }
+    .stage-badge { display: inline-block; padding: 0.3rem 0.8rem; background: rgba(56,189,248,0.1); color: var(--accent); border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-top: 1rem; font-family: var(--font-mono); }
 
-    /* CODE SAMPLE */
-    .code-sample { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
-    .code-sample-bar { display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
-    .code-sample-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+    /* CODE ENGINE */
+    .code-sample { background: #0d1117; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 2.5rem 0; }
+    .code-sample-bar { display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 0.8rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .code-sample-dots span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
     .code-sample-dots span:nth-child(1) { background: #ff5f56; }
     .code-sample-dots span:nth-child(2) { background: #ffbd2e; }
     .code-sample-dots span:nth-child(3) { background: #27c93f; }
-    .code-sample-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
-    .code-sample-copy { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
-    .code-sample-copy:hover { color: #fff; border-color: #fff; }
-    .code-sample pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: 0.85rem; font-family: var(--font-mono); }
+    .code-sample-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-weight: 700; }
+    .code-sample-copy { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 800; transition: all 0.2s; }
+    .code-sample-copy:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.05); }
 
-    /* FIGURES & TABLES */
+    /* GALLERIES & FIGURES */
     .figure-stack-two { display: flex; gap: 2rem; margin: 2rem 0; }
     .figure-frame { flex: 1; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #000; cursor: zoom-in; }
     .figure-frame img { width: 100%; height: auto; display: block; opacity: 0.9; transition: opacity 0.2s; }
     .figure-frame:hover img { opacity: 1; }
     .figure-caption { text-align: center; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 0.8rem; }
-    .compare-table { width: 100%; border-collapse: collapse; text-align: left; margin: 1.5rem 0; }
-    .compare-table th, .compare-table td { padding: 1rem; border-bottom: 1px solid var(--border); }
-    .compare-table th { background: rgba(56,189,248,0.05); color: var(--accent); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; }
+    .visual-gallery { display: flex; flex-direction: column; gap: 2rem; margin: 3rem 0; }
+    .wide-visual { width: 100%; }
 
-    /* INTERACTIVE TABS */
-    .transfer-explorer { margin-top: 2rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .transfer-step-rail { display: flex; background: rgba(5,8,16,0.6); overflow-x: auto; padding: 1rem; border-bottom: 1px solid var(--border); }
-    .transfer-step-wrap { display: flex; align-items: center; }
-    .transfer-step { background: transparent; border: 1px solid transparent; color: var(--muted); text-align: left; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; min-width: 140px; }
-    .transfer-step:hover, .transfer-step.is-active { background: var(--surface); border-color: var(--accent); color: var(--text); }
-    .transfer-step-index { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); display: block; }
-    .transfer-step-title { font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem; }
-    .transfer-step-connector { padding: 0 0.5rem; color: var(--muted); font-size: 1.2rem; }
-    .transfer-detail-panel { display: none; padding: 2rem; background: var(--surface); animation: fadeIn 0.3s; }
-    .transfer-detail-panel.is-active { display: block; }
-    .transfer-detail-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+    /* INTERACTIVE TAB SYSTEM (FIXED) */
+    .transfer-explorer { margin-top: 3rem; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .transfer-step-rail { display: flex; background: rgba(5,8,16,0.7); overflow-x: auto; padding: 1.2rem; border-bottom: 1px solid var(--border); gap: 1rem; }
+    .transfer-step { background: transparent; border: 1px solid transparent; color: var(--muted); text-align: left; padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-width: 180px; }
+    .transfer-step:hover, .transfer-step.is-active { background: var(--surface); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(56,189,248,0.1); }
+    .transfer-step-index { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); display: block; margin-bottom: 4px; font-weight: 800; }
+    .transfer-step-title { font-size: 0.95rem; font-weight: 800; }
+    .tab-panel-body { display: none; padding: 3.5rem; background: var(--surface); animation: fadeIn 0.5s ease-out; }
+    .tab-panel-body.is-active { display: block; }
 
-    /* LIGHTBOX */
+    /* BENCHMARK TABLES */
+    .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 2.5rem 0; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .compare-table th, .compare-table td { padding: 1.2rem; text-align: center; border-bottom: 1px solid var(--border); }
+    .compare-table th { background: rgba(56,189,248,0.1); color: var(--accent); font-family: var(--font-mono); font-size: 0.85rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+    .compare-table td { font-weight: 700; font-family: var(--font-mono); }
+    .row-winner { background: rgba(74,222,128,0.08); color: var(--accent2); }
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.story-block {
+  background: rgba(255,255,255,0.02);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+    /* LIGHTBOX ENGINE */
     .image-lightbox[hidden] { display: none; }
-    .image-lightbox { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-    .image-lightbox-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-    .image-lightbox-shell { position: relative; z-index: 1001; display: flex; flex-direction: column; width: 100%; height: 100%; padding: 2rem; }
-    .image-lightbox-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
-    .image-lightbox-button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
-    .image-lightbox-image { max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto;}
-    .image-lightbox-caption { text-align: center; color: #fff; padding-top: 1rem; }
+    .image-lightbox { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+    .image-lightbox-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.9); cursor: zoom-out; }
+    .image-lightbox-shell { position: relative; z-index: 5001; width: 90%; height: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .image-lightbox-image { max-width: 100%; max-height: 85%; object-fit: contain; border: 2px solid var(--border); box-shadow: 0 0 100px rgba(0,0,0,0.8); }
+
+    footer { margin-top: 10rem; padding: 6rem 2rem; border-top: 1px solid var(--border); text-align: center; background: var(--surface); }
+    .progress-line { position: fixed; top: 0; left: 0; height: 5px; background: linear-gradient(to right, var(--accent), var(--accent2)); z-index: 9999; width: 0%; transition: width 0.1s; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
       .assignment-layout { flex-direction: column; }
-      .side-rail-nav { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); }
-      .assignment-flow { padding: 2rem 1rem; }
-      .story-grid { grid-template-columns: 1fr; }
-      .figure-stack-two { flex-direction: column; }
+      .side-rail-nav { width: 100%; height: auto; position: static; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
+      .assignment-flow { padding: 3rem 1.5rem; }
+      .visual-gallery { grid-template-columns: 1fr; }
+      .hero-card h1 { font-size: 2.8rem; }
     }
   </style>
 </head>
 
 <body data-theme="dark">
-  <header class="topbar">
+  <div class="progress-line" id="scrollBar"></div>
+
+<header class="topbar">
     <a class="brand" href="../index.html">
       <span class="brand-copy">
         <p class="brand-label">3AIPRO · Multimodal</p>
@@ -166,377 +198,383 @@
       <a href="multimodal.html" class="active">Multimodal</a>
     </nav>
     <div class="topbar-actions">
-      <button class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
+<button id="themeSwitch" class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
     </div>
   </header>
 
-  <main id="main-content" class="assignment-layout">
+  <main class="assignment-layout">
     
     <aside class="side-rail-nav">
-      <a class="side-rail-link" href="#overview" data-section-link="overview"><span class="side-rail-icon">■</span><span class="side-rail-label">Overview</span></a>
-      <a class="side-rail-link" href="#multimodal-eda" data-section-link="multimodal-eda"><span class="side-rail-icon">■</span><span class="side-rail-label">EDA & Dataset</span></a>
-      <a class="side-rail-link" href="#multimodal-pipeline" data-section-link="multimodal-pipeline"><span class="side-rail-icon">■</span><span class="side-rail-label">Data Pipeline</span></a>
-      <a class="side-rail-link" href="#multimodal-models" data-section-link="multimodal-models"><span class="side-rail-icon">■</span><span class="side-rail-label">Models Setup</span></a>
-      <a class="side-rail-link" href="#multimodal-results" data-section-link="multimodal-results"><span class="side-rail-icon">■</span><span class="side-rail-label">Results</span></a>
-      <a class="side-rail-link" href="#multimodal-extensions" data-section-link="multimodal-extensions"><span class="side-rail-icon">■</span><span class="side-rail-label">Extensions</span></a>
+      <a class="side-rail-link is-active" href="#overview" data-section-link="overview"><span class="side-rail-icon">■</span>Overview</a>
+      <a class="side-rail-link" href="#eda" data-section-link="eda"><span class="side-rail-icon">■</span>Data Analysis (EDA)</a>
+      <a class="side-rail-link" href="#labeling" data-section-link="labeling"><span class="side-rail-icon">■</span>Semantic Labeling</a>
+      <a class="side-rail-link" href="#features" data-section-link="features"><span class="side-rail-icon">■</span>Feature Strategy</a>
+      <a class="side-rail-link" href="#classification" data-section-link="classification"><span class="side-rail-icon">■</span>Classification</a>
+      <a class="side-rail-link" href="#results" data-section-link="results"><span class="side-rail-icon">■</span>Results & Bias</a>
+      <a class="side-rail-link" href="#extensions" data-section-link="extensions"><span class="side-rail-icon">■</span>Extensions</a>
     </aside>
 
     <div class="assignment-flow">
       
-      <section id="overview" class="section page-hero">
+      <!-- HERO SECTION -->
+      <section id="overview" class="section page-hero is-revealed">
         <article class="hero-card">
-          <p class="eyebrow">Multimodal Track</p>
-          <h1>Zero-shot vs Few-shot on <span>COCO Karpathy</span>.</h1>
-          <p class="page-subtitle">Evaluating multimodal classification capabilities by aligning Text and Image semantic spaces using the CLIP (Contrastive Language-Image Pretraining) foundation model.</p>
-          
-          <div class="button-row">
-            <a class="button button-primary" href="#multimodal-eda">View Detailed Report</a>
-            <a class="button button-secondary" href="../index.html">Back to Home</a>
-          </div>
+          <p class="eyebrow">Individual Technical Report</p>
+          <h1>Bridging the Gap: <span>BART</span> Distillation and <span>CLIP</span> Alignment.</h1>
+          <p class="page-subtitle">An individual technical investigation into multimodal semantic recognition, evaluating robust Zero-shot alignment against Few-shot linear probing on high-fidelity image-text pairs.</p>
           
           <div class="hero-meta">
-            <div><p class="meta-label">Executed by</p><p class="meta-value">Doan Anh Khoi (2352601)</p></div>
-            <div><p class="meta-label">Dataset</p><p class="meta-value">COCO Karpathy</p></div>
-            <div><p class="meta-label">Models used</p><p class="meta-value">CLIP (ViT-Base-Patch32)</p></div>
-            <div><p class="meta-label">Extensions</p><p class="meta-value">TTA, Error Visualization</p></div>
+            <div><p class="meta-label">Primary Researcher</p><p class="meta-value">Doan Anh Khoi (2352601)</p></div>
+            <div><p class="meta-label">Foundation backbone</p><p class="meta-value">CLIP ViT-B/32 (OpenAI)</p></div>
+            <div><p class="meta-label">Semantic engine</p><p class="meta-value">BART-Large-MNLI</p></div>
+            <div><p class="meta-label">Distilled Scope</p><p class="meta-value">5000 Target Pairs</p></div>
           </div>
         </article>
       </section>
 
-      <section id="multimodal-eda" class="section">
-        <div class="section-head">
-          <h2 class="section-title">1. Problem and dataset exploration (EDA)</h2>
-          <p class="section-copy">Analyzing the multimodal dataset and the Weak Supervision labeling method.</p>
-        </div>
+      <!-- EDA SECTION -->
+      <section id="eda" class="section">
+        <h2 class="section-title">01. Exploratory Data Analysis (EDA)</h2>
+        <p class="section-copy">Understanding the statistical and semantic regularities within the COCO subset to identify potential biases in the downstream multimodal learning process.</p>
+        
         <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Problem statement</p>
-              <h3 class="card-title">Objective</h3>
-              <p class="track-copy">Multimodal models require cross-modal alignment between Text and Image semantic spaces. The primary task is to classify images into 5 major semantic groups: <code>animal, vehicle, person, food, indoor</code>.</p>
+          <div class="visual-gallery">
+            <div class="figure-stack-two">
+              <div class="figure-frame">
+                <img src="images/eda_class_distribution.png" alt="Class Distribution">
+                <div class="figure-caption">Fig 1.1: Global Class Distribution and Imbalance</div>
+              </div>
+              <div class="figure-frame">
+                <img src="images/eda_text_analysis.png" alt="Text Complexity">
+                <div class="figure-caption">Fig 1.2: Caption Length and Semantic Complexity</div>
+              </div>
             </div>
-            <div class="story-block">
-              <p class="card-kicker">Dataset Highlights</p>
-              <h3 class="card-title">Caption Processing & Labeling</h3>
-              <ul class="mini-list" style="color: var(--muted)">
-                <li>Dataset source: <code>yerevann/coco-karpathy</code> via HuggingFace Datasets.</li>
-                <li><strong>Labeling via Captions:</strong> We defined specific keyword mapping for the 5 classes. The <code>get_label_from_captions</code> function scans the original text captions to automatically assign class labels (Weak Supervision).</li>
-                <li>Images are downloaded directly from URLs, aggressively filtering out corrupted links to curate 800 clean samples.</li>
-              </ul>
+            <div class="figure-stack-two">
+              <div class="figure-frame">
+                <img src="images/eda_aspect_ratio.png" alt="Geometric Variance">
+                <div class="figure-caption">Fig 1.3: Image Aspect Ratio Variability per Category</div>
+              </div>
+              <div class="figure-frame">
+                <img src="images/eda_sample_grid.png" alt="Sample Grid">
+                <div class="figure-caption">Fig 1.4: Qualitative Verification of Generated Labels</div>
+              </div>
+            </div>
+            <div class="figure-frame wide-visual">
+              <img src="images/eda_wordcloud.png" alt="Caption analysis including length distribution and semantic word cloud">
+              <div class="figure-caption">Fig 1.5: Semantic Word Cloud</div>
             </div>
           </div>
-          <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_multimodal_eda.png" alt="COCO Examples">
-          </div>
-          <p class="figure-caption">Figure 1: Examples from the COCO dataset alongside their ground-truth descriptive captions used for weak-supervision labeling.</p>
+
+          <div style="margin-top: 3rem; padding: 2rem; background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); border-radius: 0 15px 15px 0;">
+            <p class="card-kicker">EDA Observations</p>
+<p class="track-copy">
+The dataset exhibits a moderately imbalanced class distribution, where the <em>person</em> category appears most frequently, followed by <em>animal</em> and <em>food</em>, while <em>indoor</em> remains the least represented class. Despite this imbalance, all categories are sufficiently present to support meaningful learning.
+
+From the caption length distribution, most descriptions fall within a consistent range of approximately 45 to 60 words, indicating relatively uniform textual complexity across the dataset.
+
+The aspect ratio analysis shows that the majority of images are concentrated around standard proportions (close to 1:1 and 4:3), suggesting limited variation in image geometry across categories.
+
+Additionally, the word cloud highlights common contextual terms such as <em>man</em>, <em>table</em>, and <em>two</em>, reflecting the dominance of everyday scenes and human-centered activities in the dataset.
+
+Finally, the sample visualization confirms that each category contains diverse and representative visual patterns, supporting the reliability of the labeling process.
+</p></div>
         </article>
       </section>
 
-      <section id="multimodal-pipeline" class="section">
-        <div class="section-head">
-          <h2 class="section-title">2. Dataset, DataLoader, and Preprocessing Setup</h2>
-          <p class="section-copy">Multi-Crop image processing pipeline designed specifically for the CLIP architecture.</p>
-        </div>
+      <!-- LABELING SECTION -->
+      <section id="labeling" class="section">
+        <h2 class="section-title">02. Semantic Label Distillation</h2>
+        <p class="section-copy">Implementing Large Language Model (LLM) reasoning to bridge the gap between unstructured captions and categorical ground-truth.</p>
+        
         <article class="content-card">
-          <h3 class="card-title">Multi-Crop Augmentation Pipeline</h3>
-          <p class="track-copy">To enhance model robustness during feature extraction, images are not fed into CLIP in their raw form exclusively. Instead, we implement a powerful <strong>Multi-Crop</strong> strategy to capture various spatial perspectives.</p>
+          <span class="card-kicker">Semantic Bridge Logic</span>
+          <h3 class="card-title">LLM-based Automated Labeling</h3>
+          <p class="track-copy">I utilized <code>facebook/bart-large-mnli</code> to perform zero-shot text classification on raw COCO captions. This approach is superior to keyword search because it understands context; correctly identifying that "A child playing with a cat" belongs to <strong>Animal</strong> even if the word 'animal' isn't present.</p>
           
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">labeling_logic.py</span>
+              <button class="code-sample-copy" onclick="copySnippet(this)">Copy Snippet</button>
+            </div>
+<pre><code class="language-python"># Distilling ground-truth via BART Reasoning
+# Joining multiple descriptive captions into a unified context block
+text_block = " ".join(item['sentences'])
+result = labeler_llm(text_block, candidate_labels=class_names)
+
+# The highest semantic probability label is assigned as the proxy target
+label = result['labels'][0]</code></pre>
+          </div>
+        </article>
+      </section>
+
+      <!-- FEATURE AGGREGATION SECTION -->
+      <section id="features" class="section">
+        <h2 class="section-title">03. Mean Feature Extraction Pipeline</h2>
+        <p class="section-copy">Developing a multi-view representational strategy to ensure visual embedding stability against geometric shifts.</p>
+        
+        <article class="content-card">
           <div class="pipeline-container">
             <div class="pipeline-stage">
               <div class="stage-icon">01</div>
               <div class="stage-content">
-                <div class="stage-title">Generate Image Variants (Crops)</div>
-                <div class="stage-desc">From a single original image, we generate 7 variants: Original, Center crop, Horizontal Flip, and 4 Corner crops.</div>
-                <div class="stage-badge">PIL.Image</div>
+                <h4 class="stage-title">Multi-view Generation</h4>
+                <p class="track-copy">For each image, I generate an ensemble of three spatial variants: the original image, a horizontal flip for mirror invariance, and a center-resized crop ($224 \times 224$).</p>
+                <div class="stage-badge">Data Augmentation</div>
               </div>
             </div>
             <div class="pipeline-stage">
               <div class="stage-icon">02</div>
               <div class="stage-content">
-                <div class="stage-title">CLIP Processor</div>
-                <div class="stage-desc">Passing each image through the <code>CLIPProcessor</code> to convert it into the expected tensor dimensions for the vision encoder.</div>
-                <div class="stage-badge">transformers</div>
+                <h4 class="stage-title">CLIP Latent Projection</h4>
+                <p class="track-copy">Each view is passed through the frozen CLIP ViT-B/32 Vision Encoder to extract 512-dimensional embedding vectors $\{v_1, v_2, v_3\}$.</p>
+                <div class="stage-badge">Vision backbone</div>
               </div>
             </div>
             <div class="pipeline-stage">
               <div class="stage-icon">03</div>
               <div class="stage-content">
-                <div class="stage-title">Feature Extraction & Normalization</div>
-                <div class="stage-desc">Extracting the embedding vector and applying L2 Normalization to scale the vector length to 1, perfectly prepping it for Cosine Similarity computation.</div>
-                <div class="stage-badge">F.normalize</div>
-              </div>
-            </div>
-            <div class="pipeline-stage">
-              <div class="stage-icon">04</div>
-              <div class="stage-content">
-                <div class="stage-title">Test-Time Augmentation (TTA) Setup</div>
-                <div class="stage-desc">Retaining the feature vectors of all 7 crops (without averaging them yet) to facilitate the Majority Voting mechanism in the evaluation step.</div>
-                <div class="stage-badge">np.array(feats)</div>
+                <h4 class="stage-title">L2 Normalization & Fusion</h4>
+                <p class="track-copy">The final feature vector $\bar{v}$ is the normalized average of the ensemble, ensuring it sits on the unit hypersphere for valid cosine similarity.</p>
+                <div class="math-bubble" style="font-family: var(--font-mono); color: var(--accent); font-weight: 800; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px;">
+                  $\bar{v} = \text{Normalize}\left(\frac{1}{3} \sum_{i=1}^{3} v_i\right)$
+                </div>
               </div>
             </div>
           </div>
+        </article>
+      </section>
 
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Feature Extraction)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
+      <!-- CLASSIFICATION SECTION -->
+      <section id="classification" class="section">
+        <h2 class="section-title">04. Multimodal Paradigm Comparison</h2>
+        <p class="section-copy">Comparing native zero-shot alignment against task-specific linear probing heads.</p>
+        
+        <div class="transfer-explorer">
+          <div class="transfer-step-rail">
+            <button class="transfer-step is-active" data-pane="tab_zs">
+              <span class="transfer-step-index">BASELINE</span><span class="transfer-step-title">Zero-shot Alignment</span>
+            </button>
+            <button class="transfer-step" data-pane="tab_lp">
+              <span class="transfer-step-index">ADAPTATION</span><span class="transfer-step-title">Few-shot Probing</span>
+            </button>
+          </div>
+          
+          <div class="tab-panel-body is-active" id="tab_zs">
+            <span class="card-kicker">Inference via Similarity</span>
+            <h3 class="card-title">Native Image-Text Alignment</h3>
+            <p class="track-copy">This paradigm relies purely on CLIP's pre-trained weights. I project class labels into the text latent space using the prompt <i>"a photo of a [category]"</i>. Similarity is measured via dot product:</p>
+<div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: var(--font-mono); border: 1px solid var(--border);">
+  Similarity = Image_Mean_Features @ Text_Embeddings.T
+</div>
+          </div>
+          
+          <div class="tab-panel-body" id="tab_lp">
+            <span class="card-kicker">Trainable Projection Head</span>
+            <h3 class="card-title">Linear Layer Optimization</h3>
+            <p class="track-copy">I attached a trainable <code>nn.Linear(512, 5)</code> layer on top of the frozen CLIP backbone. This head was optimized on the training split using AdamW for 40 epochs.</p>
+            <ul class="mini-list" style="color: var(--muted); margin-top: 1rem;">
+              <li><strong>Optimization:</strong> AdamW ($lr=1e-3, decay=1e-2$)</li>
+              <li><strong>Objective:</strong> Reshape decision boundaries for COCO distributions.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULTS SECTION -->
+      <section id="results" class="section">
+        <h2 class="section-title">05. Benchmarking & Bias Analysis</h2>
+        <p class="section-copy">Evaluating final model performance and analyzing the impact of class imbalance on training.</p>
+        
+        <article class="content-card">
+          <table class="compare-table">
+            <thead>
+              <tr><th>Evaluation Strategy</th><th>Accuracy</th><th>Macro F1</th><th>Weighted F1</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+  <td>Zero-Shot CLIP (Mean Features)</td>
+  <td>65.72%</td>
+  <td>0.66</td>
+  <td>0.68</td>
+</tr>
+
+<tr class="row-winner">
+  <td>Few-Shot (Linear Head, Balanced)</td>
+  <td><strong>82.08%</strong></td>
+  <td><strong>0.75</strong></td>
+  <td><strong>0.82</strong></td>
+</tr>
+            </tbody>
+          </table>
+
+          <div class="visual-gallery">
+            <div class="figure-frame wide-visual">
+              <img src="images/confusion_matrix_comparison.png" alt="Confusion Matrix Comparison">
+              <div class="figure-caption">Fig 5.1: Comparative Analysis: Zero-Shot (Left) vs Few-Shot (Right)</div>
             </div>
-<pre><code class="language-python">def extract_feature_multi(image):
-    images = [image] # original
-    images.append(image.crop((image.width//4, image.height//4, 3*image.width//4, 3*image.height//4))) # center
-    images.append(image.transpose(Image.FLIP_LEFT_RIGHT)) # flip
-    # corner crops...
+          </div>
+
+          <div style="margin-top: 3rem;">
+            <h3 class="card-title">Performance Comparison: Accuracy and Confusion Matrix Analysis</h3>
+            <p class="track-copy">
+The Few-shot model achieves a significantly higher accuracy (82.08%) compared to the Zero-shot approach (65.72%), indicating stronger overall classification performance.
+
+From the confusion matrices, the Few-shot model shows a clear improvement in correctly classifying samples across all categories, with higher values along the diagonal. In particular, it demonstrates better consistency in predicting dominant classes such as <em>person</em> and <em>animal</em>, while also maintaining reasonable performance on other categories.
+
+In contrast, the Zero-shot model exhibits more confusion between classes, especially with a noticeable spread of predictions away from the diagonal. For example, a large number of <em>person</em> samples are misclassified into other categories, reflecting weaker class discrimination.
+
+Overall, the confusion matrix confirms that the Few-shot model provides more accurate and stable predictions, aligning with its higher accuracy score.
+</p>
+          </div>
+        </article>
+      </section>
+
+      <section id="extensions" class="section">
+  <h2 class="section-title">06. Project Extensions & Innovations</h2>
+  <p class="section-copy">Going beyond basic classification: Implementing advanced semantic distillation and robustness enhancements.</p>
+  
+  <article class="content-card">
+    <div class="story-grid">
+      <div class="story-block">
+        <p class="card-kicker">Innovation 01</p>
+        <h3 class="card-title">LLM-based Semantic Distillation</h3>
+        <p class="track-copy">Instead of the provided keyword-matching method, I implemented a <strong>Zero-shot Distillation</strong> pipeline using <code>BART-Large-MNLI</code>. This allowed the project to handle abstract descriptions, ensuring that ground-truth labels were assigned based on deep semantic reasoning rather than brittle string overlaps.</p>
+      </div>
+      <div class="story-block">
+        <p class="card-kicker">Innovation 02</p>
+        <h3 class="card-title">Multi-view Mean Aggregation</h3>
+<p class="track-copy">
+I engineered an <strong>Ensemble-based Feature Extraction</strong> strategy. By generating multiple geometric variants of each image (original, flipped, resized) and averaging their embeddings, the model achieves more stable and robust visual representations. This helps reduce sensitivity to spatial variations and improves the consistency of similarity-based predictions.
+</p>
+      </div>
+    </div>
+
     
-    feats = []
-    for img in images:
-        inputs = processor(images=img, return_tensors="pt").to(device)
-        with torch.no_grad():
-            outputs = model.get_image_features(**inputs)
-            feat = outputs.pooler_output if hasattr(outputs, "pooler_output") else outputs
-            feat = F.normalize(feat, dim=-1)
-        feats.append(feat.cpu().numpy().squeeze())
-    return np.array(feats)</code></pre>
-          </div>
-        </article>
-      </section>
 
-      <section id="multimodal-models" class="section">
-        <div class="section-head">
-          <h2 class="section-title">3. Model building, evaluation, and comparison</h2>
-          <p class="section-copy">Comparing the Zero-shot inference capabilities versus prototype-based Few-shot learning of CLIP.</p>
-        </div>
-        <article class="content-card">
-          <p class="card-kicker">Interactive Pipeline</p>
-          <h3 class="card-title">Zero-shot vs Few-shot Mechanisms</h3>
-          
-          <div class="transfer-explorer" data-transfer-explorer>
-            <div class="transfer-step-rail" role="tablist">
-              <div class="transfer-step-wrap">
-                <button class="transfer-step is-active" type="button" role="tab" aria-controls="panel-text" id="tab-input">
-                  <span class="transfer-step-index">STEP 1</span><span class="transfer-step-title">Reference Space</span>
-                </button><span class="transfer-step-connector">→</span>
-              </div>
-              <div class="transfer-step-wrap">
-                <button class="transfer-step" type="button" role="tab" aria-controls="panel-sim" id="tab-backbone">
-                  <span class="transfer-step-index">STEP 2</span><span class="transfer-step-title">Cosine Similarity</span>
-                </button><span class="transfer-step-connector">→</span>
-              </div>
-              <div class="transfer-step-wrap">
-                <button class="transfer-step" type="button" role="tab" aria-controls="panel-vote" id="tab-eval">
-                  <span class="transfer-step-index">STEP 3</span><span class="transfer-step-title">TTA Voting</span>
-                </button>
-              </div>
-            </div>
-            
-            <div class="transfer-detail-shell">
-              <div class="transfer-detail-panel is-active" id="panel-text" role="tabpanel">
-                <h4 class="transfer-detail-title">Constructing the Reference Space</h4>
-                <p><strong>Zero-shot:</strong> Pass the prompt template "a photo of a {class}" through CLIP's Text Encoder to obtain reference semantic vectors.<br>
-                <strong>Few-shot:</strong> Compute the mean of image feature vectors for each class in the Training set (Prototype Learning), establishing the class centroid reference vector.</p>
-              </div>
-              <div class="transfer-detail-panel" id="panel-sim" role="tabpanel">
-                <h4 class="transfer-detail-title">Computing Similarity</h4>
-                <p>Calculate the dot product between the Test Image Features and the Text/Prototype Features. Because both vectors are L2-normalized, the dot product mathematically equals Cosine Similarity.</p>
-              </div>
-              <div class="transfer-detail-panel" id="panel-vote" role="tabpanel">
-                <h4 class="transfer-detail-title">TTA Voting Mechanism</h4>
-                <p>During inference, each test image possesses 7 distinct feature vectors (from the 7 crops). We perform similarity matching for all 7 instances independently and select the most frequently predicted label (Majority Voting) as the final outcome.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="soft-divider"></div>
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Few-shot Prototypes)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
-            </div>
-<pre><code class="language-python"># Build prototypes for Few-shot Learning
-prototypes = []
-for c in range(num_classes):
-    class_feats = X_train_fixed[y_train == c]
-    proto = class_feats.mean(axis=0)
-    proto = proto / (np.linalg.norm(proto) + 1e-8)
-    prototypes.append(proto)
-prototypes = np.array(prototypes)
-
-# Predict with TTA Mean Aggregation
-fs_predictions = []
-for feats in X_test:
-    feats = feats / np.linalg.norm(feats, axis=1, keepdims=True)
-    logits = feats @ prototypes.T
-    logits_mean = logits.mean(axis=0)
-    pred = np.argmax(logits_mean)
-    fs_predictions.append(pred)</code></pre>
-          </div>
-        </article>
-      </section>
-
-      <section id="multimodal-results" class="section">
-        <div class="section-head">
-          <h2 class="section-title">4. Experimental Results & Analysis</h2>
-          <p class="section-copy">Analyzing the advantages of each approach and the impact of Noisy Labels.</p>
-        </div>
-        <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Performance Summary</p>
-              <h3 class="card-title">Zero-shot vs Few-shot</h3>
-              <p class="track-copy">The Few-shot method outperforms the Zero-shot approach because it leverages actual labeled support samples from the dataset to adjust the feature space closer to the COCO distribution, rather than relying solely on generalized text alignment.</p>
-              <div class="compare-table">
-                <table>
-                  <thead>
-                    <tr><th>Method</th><th>Support Samples/Class</th><th>Core Principle</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td><strong>Zero-Shot (TTA)</strong></td><td>0</td><td>Text Embedding Cosine Similarity + Voting</td></tr>
-                    <tr><td><strong>Few-Shot (TTA)</strong></td><td>~ 80 (from Train)</td><td>Image Prototype Mean Pooling + Similarity</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="story-block">
-              <p class="card-kicker">Error Analysis</p>
-              <h3 class="card-title">Explaining the Discrepancies</h3>
-              <ul class="mini-list" style="color: var(--muted)">
-                <li><strong>Noisy Labels:</strong> Labels are auto-generated via Keyword Matching from captions. For example, an image displaying both a person and a dog might be captioned focusing on the "dog", thus mislabeling it as 'Animal' and confusing the model's metrics.</li>
-                <li><strong>Class Confusion:</strong> Significant overlap and confusion consistently occur between the 'animal', 'vehicle', and 'person' classes due to complex visual compositions.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="figure-stack-two">
-            <div class="figure-frame"><img src="placeholder_multimodal_cm.png" alt="Confusion Matrices"></div>
-            <div class="figure-frame"><img src="placeholder_multimodal_f1.png" alt="Per-class F1 Score"></div>
-          </div>
-          <p class="figure-caption">Figures 2 & 3: Comparison of Confusion Matrices and Per-class F1-Scores between Zero-shot and Few-shot.</p>
-        </article>
-      </section>
-
-      <section id="multimodal-extensions" class="section">
-        <div class="section-head">
-          <h2 class="section-title">5. Other extension reports</h2>
-          <p class="section-copy">Implementing Test-Time Augmentation (TTA) and Qualitative Error Analysis.</p>
-        </div>
-        <article class="content-card">
-          <div class="story-grid">
-            <div class="story-block">
-              <p class="card-kicker">Test-Time Augmentation (TTA)</p>
-              <h3 class="card-title">Enhancing Robustness</h3>
-              <p class="track-copy">A crucial extension for extra credit: Instead of evaluating an image only once, TTA allows the model to synthesize information from multiple spatial perspectives (Crops) of the exact same image. Applying Majority Voting across these crops mitigates noise and yields far more accurate predictions.</p>
-            </div>
-            
-            <div class="story-block">
-              <p class="card-kicker">Qualitative Visualization</p>
-              <h3 class="card-title">Simulating Predictions</h3>
-              <p class="track-copy">The <code>plot_results</code> script directly fetches visual examples where the Zero-shot approach failed but the Few-shot approach succeeded. This effectively demonstrates the immense power of computing Prototypes from actual Training distribution data.</p>
-            </div>
-          </div>
-          
-          <div class="code-sample">
-            <div class="code-sample-bar">
-              <div class="code-sample-dots"><span></span><span></span><span></span></div>
-              <span class="code-sample-label">Assign1_Multimodal.ipynb (Visualization)</span>
-              <button class="code-sample-copy" data-copy-code>Copy</button>
-            </div>
-<pre><code class="language-python"># Find one correct and one incorrect example from Zero-Shot
-correct_idx = np.where(zs_predictions == y_test)[0][0]
-incorrect_idx = np.where(zs_predictions != y_test)[0][0]
-
-print("\nVisualizing Sample Predictions (Zero-Shot vs Few-Shot):")
-plot_results(test_data, y_test, zs_predictions, fs_predictions, [correct_idx, incorrect_idx])</code></pre>
-          </div>
-          
-          <div class="figure-frame" style="margin-top: 2rem;">
-            <img src="placeholder_multimodal_vis.png" alt="Qualitative Results">
-          </div>
-          <p class="figure-caption">Figure 4: Qualitative visualization of predictions on the COCO dataset (True Label vs Zero-shot vs Few-shot).</p>
-
-        </article>
-      </section>
+    <!-- CODE BLOCK FOR VISUALIZATION EXTENSION -->
+    <div class="code-sample">
+      <div class="code-sample-bar">
+        <div class="code-sample-dots"><span></span><span></span><span></span></div>
+        <span class="code-sample-label">extension_diagnostics.py</span>
+        <button class="code-sample-copy" onclick="copySnippet(this)">Copy Snippet</button>
+      </div>
+<pre><code class="language-python"># Extension: Visualizing failure cases where Few-shot bias occurs
+def plot_diagnostic_comparison(incorrect_indices):
+    # This utility fetches images where Linear Probing failed 
+    # but Zero-shot succeeded, providing qualitative insight into bias.
+    for idx in incorrect_indices:
+        display_results(image[idx], true_label[idx], zs_pred[idx], fs_pred[idx])</code></pre>
+    </div>
+  </article>
+</section>
 
     </div>
   </main>
 
-  <div class="image-lightbox" data-image-lightbox hidden>
-    <div class="image-lightbox-backdrop" data-image-lightbox-close></div>
+  <div class="image-lightbox" id="lightbox" hidden>
+    <div class="image-lightbox-backdrop" id="closeLightbox"></div>
     <div class="image-lightbox-shell">
-      <div class="image-lightbox-toolbar">
-        <button class="image-lightbox-button" data-image-lightbox-close>Close</button>
-      </div>
-      <div class="image-lightbox-stage">
-        <img class="image-lightbox-image" data-image-lightbox-image src="" alt="">
-      </div>
-      <p class="image-lightbox-caption" data-image-lightbox-caption></p>
+      <img class="image-lightbox-image" id="lightboxImg" src="" alt="">
     </div>
   </div>
 
-  <footer class="topbar" style="position:static; margin-top:2rem; flex-direction:column; gap:1rem;">
-    <div class="brand"><p class="brand-label">3AIPRO · Deep Learning</p></div>
-    <p style="color:var(--muted); font-size:0.85rem">Deep Learning and Its Applications (CO3133)</p>
+  <footer>
+    <div class="stage-icon" style="margin: 0 auto 1.5rem; width: 45px; height: 45px;">K</div>
+    <p style="font-weight: 800; font-size: 1.2rem; margin-bottom: 1rem;">Doan Anh Khoi · 2352601</p>
+    <p style="color: var(--muted); font-size: 0.95rem;">HCMUT · Faculty of Computer Science and Engineering · April 2026</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
   
   <script>
-    // THEME TOGGLE
-    const root = document.documentElement;
-    const themeBtn = document.querySelector('[data-theme-toggle]');
+    /** 
+     * THEME TOGGLE ENGINE 
+     */
+    const themeBtn = document.getElementById('themeSwitch');
     themeBtn.addEventListener('click', () => {
-      root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+      const mode = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', mode);
     });
 
-    // TABS INTERACTIVE (PIPELINE)
-    const tabs = document.querySelectorAll('.transfer-step');
-    const panels = document.querySelectorAll('.transfer-detail-panel');
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('is-active'));
-        panels.forEach(p => { p.classList.remove('is-active'); p.hidden = true; });
-        tab.classList.add('is-active');
-        document.getElementById(tab.getAttribute('aria-controls')).classList.add('is-active');
-        document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+    /** 
+     * TABS CONTROLLER (FIXED) 
+     */
+    const tabTriggers = document.querySelectorAll('.transfer-step');
+    const tabPanels = document.querySelectorAll('.tab-panel-body');
+
+    tabTriggers.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabTriggers.forEach(t => t.classList.remove('is-active'));
+        tabPanels.forEach(p => p.classList.remove('is-active'));
+        
+        btn.classList.add('is-active');
+        document.getElementById(btn.dataset.pane).classList.add('is-active');
       });
     });
 
-    // COPY CODE
-    document.querySelectorAll('[data-copy-code]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const code = btn.closest('.code-sample').querySelector('code').innerText;
-        await navigator.clipboard.writeText(code);
-        btn.innerText = 'Copied!';
-        setTimeout(() => btn.innerText = 'Copy', 1500);
+    /** 
+     * SCROLL PROGRESS & ACTIVE LINKING 
+     */
+    const progressBar = document.getElementById('scrollBar');
+    const contentSections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.side-rail-link');
+
+    window.addEventListener('scroll', () => {
+      // Progress Line
+      const totalH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      progressBar.style.width = (window.pageYOffset / totalH) * 100 + "%";
+
+      // Scroll Spy
+      let activeId = "";
+      contentSections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top < 200 && rect.bottom > 200) activeId = sec.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('is-active');
+        if (link.getAttribute('href').includes(activeId)) link.classList.add('is-active');
       });
     });
 
-    // SCROLLSPY
-    const observer = new IntersectionObserver((entries) => {
+    /** 
+     * SCROLL REVEAL OBSERVER (FIXED) 
+     */
+    const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          document.querySelectorAll('.side-rail-link[data-section-link]').forEach(link => {
-            link.classList.toggle('is-active', link.dataset.sectionLink === entry.target.id);
-          });
-        }
+        if (entry.isIntersecting) entry.target.classList.add('is-revealed');
       });
-    }, { rootMargin: "-20% 0px -60% 0px" });
-    document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+    }, { threshold: 0.1 });
+    contentSections.forEach(s => revealObserver.observe(s));
 
-    // LIGHTBOX
-    const lightbox = document.querySelector('[data-image-lightbox]');
-    const lbImg = document.querySelector('[data-image-lightbox-image]');
-    const lbCaption = document.querySelector('[data-image-lightbox-caption]');
+    /** 
+     * COPY CODE UTILITY (FIXED) 
+     */
+    function copySnippet(btn) {
+      const code = btn.closest('.code-sample').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const oldText = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = oldText, 2000);
+      });
+    }
+
+    /** 
+     * LIGHTBOX ENGINE 
+     */
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
     document.querySelectorAll('.figure-frame img').forEach(img => {
       img.addEventListener('click', () => {
         lbImg.src = img.src;
-        lbCaption.innerText = img.closest('.figure-frame').nextElementSibling?.innerText || "";
-        lightbox.hidden = false;
+        lb.hidden = false;
+        document.body.style.overflow = 'hidden';
       });
     });
-    document.querySelectorAll('[data-image-lightbox-close]').forEach(btn => {
-      btn.addEventListener('click', () => lightbox.hidden = true);
+    document.getElementById('closeLightbox').addEventListener('click', () => {
+      lb.hidden = true;
+      document.body.style.overflow = 'auto';
     });
   </script>
 </body>
