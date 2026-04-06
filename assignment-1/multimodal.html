@@ -29,7 +29,7 @@
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    /* COLOR PALETTE & TYPOGRAPHY - TEXT THEME (PURPLE ACCENT) */
+    /* GIỮ NGUYÊN TOÀN BỘ PHẦN CSS CỦA BẠN */
     :root {
       --bg: #050810;
       --surface: #0c1120;
@@ -56,7 +56,6 @@
     a { color: var(--accent); text-decoration: none; }
     ul { padding-left: 1.5rem; }
     
-    /* TOPBAR */
     .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(5,8,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; }
     [data-theme="light"] .topbar { background: rgba(255,255,255,0.85); }
     .brand { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text); }
@@ -67,7 +66,6 @@
     .topnav a:hover, .topnav a.active { color: var(--accent); }
     .theme-toggle { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
 
-    /* LAYOUT ENGINE */
     .assignment-layout { display: flex; max-width: 1440px; margin: 0 auto; padding-top: 5rem; }
     .side-rail-nav { width: 240px; position: sticky; top: 5.5rem; height: calc(100vh - 6rem); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; border-right: 1px solid var(--border); flex-shrink: 0; }
     .side-rail-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
@@ -76,11 +74,9 @@
     
     .assignment-flow { flex: 1; padding: 2rem 5rem 8rem; min-width: 0; }
     
-    /* ANIMATIONS (SCROLL REVEAL) */
     .section { margin-bottom: 7rem; scroll-margin-top: 120px; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
     .section.is-revealed { opacity: 1; transform: translateY(0); }
     
-    /* HERO STYLES */
     .page-hero { display: flex; flex-direction: column; gap: 2rem; }
     .eyebrow { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 800; margin-bottom: 1.2rem; }
     .hero-card h1 { font-size: 3.8rem; font-weight: 900; line-height: 1.05; margin-bottom: 1.5rem; letter-spacing: -2px; }
@@ -91,7 +87,6 @@
     .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
     .meta-value { font-size: 1.1rem; font-weight: 800; color: var(--text); }
 
-    /* CONTENT CARDS */
     .section-title { font-size: 2.2rem; font-weight: 900; border-bottom: 2px solid var(--border); padding-bottom: 0.8rem; margin-bottom: 1.5rem; letter-spacing: -1px; }
     .section-copy { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; }
     .content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; }
@@ -100,7 +95,6 @@
     .card-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 1.2rem; color: var(--text); }
     .track-copy { color: var(--muted); margin-bottom: 1.5rem; font-size: 1.05rem; }
 
-    /* PIPELINE SYSTEM */
     .pipeline-container { display: flex; flex-direction: column; gap: 1rem; margin: 3rem 0; }
     .pipeline-stage { display: flex; gap: 2rem; position: relative; padding-bottom: 2.5rem; }
     .pipeline-stage:not(:last-child)::after { content: ''; position: absolute; left: 1.5rem; top: 3.5rem; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), rgba(167,139,250,0.1)); z-index: 0; }
@@ -111,7 +105,6 @@
     .stage-title { font-weight: 800; font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--text); }
     .stage-badge { display: inline-block; padding: 0.3rem 0.8rem; background: rgba(56,189,248,0.1); color: var(--accent); border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-top: 1rem; font-family: var(--font-mono); }
 
-    /* CODE ENGINE */
     .code-sample { background: #0d1117; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 2.5rem 0; }
     .code-sample-bar { display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 0.8rem 1.5rem; border-bottom: 1px solid var(--border); }
     .code-sample-dots span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
@@ -122,7 +115,6 @@
     .code-sample-copy { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 800; transition: all 0.2s; }
     .code-sample-copy:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.05); }
 
-    /* GALLERIES & FIGURES */
     .figure-stack-two { display: flex; gap: 2rem; margin: 2rem 0; }
     .figure-frame { flex: 1; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #000; cursor: zoom-in; }
     .figure-frame img { width: 100%; height: auto; display: block; opacity: 0.9; transition: opacity 0.2s; }
@@ -131,7 +123,6 @@
     .visual-gallery { display: flex; flex-direction: column; gap: 2rem; margin: 3rem 0; }
     .wide-visual { width: 100%; }
 
-    /* INTERACTIVE TAB SYSTEM (FIXED) */
     .transfer-explorer { margin-top: 3rem; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .transfer-step-rail { display: flex; background: rgba(5,8,16,0.7); overflow-x: auto; padding: 1.2rem; border-bottom: 1px solid var(--border); gap: 1rem; }
     .transfer-step { background: transparent; border: 1px solid transparent; color: var(--muted); text-align: left; padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-width: 180px; }
@@ -141,25 +132,14 @@
     .tab-panel-body { display: none; padding: 3.5rem; background: var(--surface); animation: fadeIn 0.5s ease-out; }
     .tab-panel-body.is-active { display: block; }
 
-    /* BENCHMARK TABLES */
     .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 2.5rem 0; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
     .compare-table th, .compare-table td { padding: 1.2rem; text-align: center; border-bottom: 1px solid var(--border); }
     .compare-table th { background: rgba(56,189,248,0.1); color: var(--accent); font-family: var(--font-mono); font-size: 0.85rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
     .compare-table td { font-weight: 700; font-family: var(--font-mono); }
     .row-winner { background: rgba(74,222,128,0.08); color: var(--accent2); }
-.story-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .story-block { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
 
-.story-block {
-  background: rgba(255,255,255,0.02);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-}
-    /* LIGHTBOX ENGINE */
     .image-lightbox[hidden] { display: none; }
     .image-lightbox { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     .image-lightbox-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.9); cursor: zoom-out; }
@@ -198,7 +178,7 @@
       <a href="multimodal.html" class="active">Multimodal</a>
     </nav>
     <div class="topbar-actions">
-<button id="themeSwitch" class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
+      <button id="themeSwitch" class="theme-toggle" type="button" data-theme-toggle>Toggle Theme</button>
     </div>
   </header>
 
@@ -227,7 +207,7 @@
             <div><p class="meta-label">Primary Researcher</p><p class="meta-value">Doan Anh Khoi (2352601)</p></div>
             <div><p class="meta-label">Foundation backbone</p><p class="meta-value">CLIP ViT-B/32 (OpenAI)</p></div>
             <div><p class="meta-label">Semantic engine</p><p class="meta-value">BART-Large-MNLI</p></div>
-            <div><p class="meta-label">Distilled Scope</p><p class="meta-value">5000 Target Pairs</p></div>
+            <div><p class="meta-label">Distilled Scope</p><p class="meta-value">10,000 Target Pairs</p></div>
           </div>
         </article>
       </section>
@@ -242,42 +222,39 @@
             <div class="figure-stack-two">
               <div class="figure-frame">
                 <img src="images/eda_class_distribution.png" alt="Class Distribution">
-                <div class="figure-caption">Fig 1.1: Global Class Distribution and Imbalance</div>
+                <div class="figure-caption">Fig 1.1: Global Class Distribution (5,006 'person' samples)</div>
               </div>
               <div class="figure-frame">
-                <img src="images/eda_text_analysis.png" alt="Text Complexity">
-                <div class="figure-caption">Fig 1.2: Caption Length and Semantic Complexity</div>
+                <img src="images/eda_caption_lenght.png" alt="Text Complexity">
+                <div class="figure-caption">Fig 1.2: Caption Length (Avg: 10.4 words)</div>
               </div>
             </div>
             <div class="figure-stack-two">
               <div class="figure-frame">
                 <img src="images/eda_aspect_ratio.png" alt="Geometric Variance">
-                <div class="figure-caption">Fig 1.3: Image Aspect Ratio Variability per Category</div>
+                <div class="figure-caption">Fig 1.3: Image Aspect Ratio Distribution</div>
               </div>
               <div class="figure-frame">
-                <img src="images/eda_sample_grid.png" alt="Sample Grid">
-                <div class="figure-caption">Fig 1.4: Qualitative Verification of Generated Labels</div>
+                <img src="images/eda_image_size.png" alt="Size variation">
+                <div class="figure-caption">Fig 1.4: Image Size Variation (Width vs Height)</div>
               </div>
             </div>
             <div class="figure-frame wide-visual">
-              <img src="images/eda_wordcloud.png" alt="Caption analysis including length distribution and semantic word cloud">
-              <div class="figure-caption">Fig 1.5: Semantic Word Cloud</div>
+              <img src="images/eda_word_frequency.png" alt="Most Frequent Words">
+              <div class="figure-caption">Fig 1.5: Frequency Analysis of Most Common Terms</div>
             </div>
           </div>
 
           <div style="margin-top: 3rem; padding: 2rem; background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); border-radius: 0 15px 15px 0;">
             <p class="card-kicker">EDA Observations</p>
-<p class="track-copy">
-The dataset exhibits a moderately imbalanced class distribution, where the <em>person</em> category appears most frequently, followed by <em>animal</em> and <em>food</em>, while <em>indoor</em> remains the least represented class. Despite this imbalance, all categories are sufficiently present to support meaningful learning.
+            <p class="track-copy">
+              The dataset exhibits a significant class imbalance, where the <em>person</em> category dominates with over 5,000 samples, followed by <em>animal</em> and <em>food</em>. This imbalance necessitates careful evaluation to avoid biased predictions.
 
-From the caption length distribution, most descriptions fall within a consistent range of approximately 45 to 60 words, indicating relatively uniform textual complexity across the dataset.
+              From the caption length distribution, most descriptions are concise, averaging approximately <strong>10.4 words</strong>. The word frequency analysis confirms a human-centric dataset with common nouns and prepositions appearing most frequently.
 
-The aspect ratio analysis shows that the majority of images are concentrated around standard proportions (close to 1:1 and 4:3), suggesting limited variation in image geometry across categories.
-
-Additionally, the word cloud highlights common contextual terms such as <em>man</em>, <em>table</em>, and <em>two</em>, reflecting the dominance of everyday scenes and human-centered activities in the dataset.
-
-Finally, the sample visualization confirms that each category contains diverse and representative visual patterns, supporting the reliability of the labeling process.
-</p></div>
+              The aspect ratio analysis shows distinct peaks around 1.3 and 1.5, indicating standard photography formats, while the size variation boxplot reveals that image widths typically range between 500-640 pixels, slightly larger than heights.
+            </p>
+          </div>
         </article>
       </section>
 
@@ -344,11 +321,35 @@ label = result['labels'][0]</code></pre>
           </div>
         </article>
       </section>
+      <section id="clip" class="section">
+  <h2 class="section-title">CLIP Architecture</h2>
+
+  <article class="content-card">
+    <div class="figure-frame wide-visual">
+      <img src="images/CLIP.png">
+      <div class="figure-caption">CLIP contrastive learning</div>
+    </div>
+
+    <p class="track-copy">
+      CLIP learns a shared embedding space between images and text using contrastive learning.
+      Matching pairs are pulled closer while non-matching pairs are pushed apart.
+    </p>
+
+    <p class="track-copy">
+      At inference time, class labels are converted into prompts such as 
+      <em>"a photo of a dog"</em>, and classification is performed via cosine similarity.
+    </p>
+
+    <div style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:10px; font-family: var(--font-mono);">
+      Similarity = Image_Features @ Text_Embeddings.T
+    </div>
+  </article>
+</section>
 
       <!-- CLASSIFICATION SECTION -->
       <section id="classification" class="section">
         <h2 class="section-title">04. Multimodal Paradigm Comparison</h2>
-        <p class="section-copy">Comparing native zero-shot alignment against task-specific linear probing heads.</p>
+        <p class="section-copy">Comparing native zero-shot alignment against task-specific linear probing heads with 70/15/15 data splitting.</p>
         
         <div class="transfer-explorer">
           <div class="transfer-step-rail">
@@ -364,18 +365,18 @@ label = result['labels'][0]</code></pre>
             <span class="card-kicker">Inference via Similarity</span>
             <h3 class="card-title">Native Image-Text Alignment</h3>
             <p class="track-copy">This paradigm relies purely on CLIP's pre-trained weights. I project class labels into the text latent space using the prompt <i>"a photo of a [category]"</i>. Similarity is measured via dot product:</p>
-<div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: var(--font-mono); border: 1px solid var(--border);">
-  Similarity = Image_Mean_Features @ Text_Embeddings.T
-</div>
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: var(--font-mono); border: 1px solid var(--border);">
+              Similarity = Image_Mean_Features @ Text_Embeddings.T
+            </div>
           </div>
           
           <div class="tab-panel-body" id="tab_lp">
             <span class="card-kicker">Trainable Projection Head</span>
             <h3 class="card-title">Linear Layer Optimization</h3>
-            <p class="track-copy">I attached a trainable <code>nn.Linear(512, 5)</code> layer on top of the frozen CLIP backbone. This head was optimized on the training split using AdamW for 40 epochs.</p>
+            <p class="track-copy">I attached a trainable <code>nn.Linear(512, 5)</code> layer on top of the frozen CLIP backbone. This head was optimized for 40 epochs, using the validation set to save the best model weights.</p>
             <ul class="mini-list" style="color: var(--muted); margin-top: 1rem;">
               <li><strong>Optimization:</strong> AdamW ($lr=1e-3, decay=1e-2$)</li>
-              <li><strong>Objective:</strong> Reshape decision boundaries for COCO distributions.</li>
+              <li><strong>Split:</strong> 7000 (Train) / 1500 (Val) / 1500 (Test)</li>
             </ul>
           </div>
         </div>
@@ -384,7 +385,7 @@ label = result['labels'][0]</code></pre>
       <!-- RESULTS SECTION -->
       <section id="results" class="section">
         <h2 class="section-title">05. Benchmarking & Bias Analysis</h2>
-        <p class="section-copy">Evaluating final model performance and analyzing the impact of class imbalance on training.</p>
+        <p class="section-copy">Evaluating final model performance on the independent test set (1,500 samples).</p>
         
         <article class="content-card">
           <table class="compare-table">
@@ -393,81 +394,74 @@ label = result['labels'][0]</code></pre>
             </thead>
             <tbody>
               <tr>
-  <td>Zero-Shot CLIP (Mean Features)</td>
-  <td>65.72%</td>
-  <td>0.66</td>
-  <td>0.68</td>
-</tr>
-
-<tr class="row-winner">
-  <td>Few-Shot (Linear Head, Balanced)</td>
-  <td><strong>82.08%</strong></td>
-  <td><strong>0.75</strong></td>
-  <td><strong>0.82</strong></td>
-</tr>
+                <td>Zero-Shot CLIP (Mean Features)</td>
+                <td>65.07%</td>
+                <td>0.65</td>
+                <td>0.66</td>
+              </tr>
+              <tr class="row-winner">
+                <td>Few-Shot (Linear Head, Best Weights)</td>
+                <td><strong>83.73%</strong></td>
+                <td><strong>0.79</strong></td>
+                <td><strong>0.84</strong></td>
+              </tr>
             </tbody>
           </table>
 
           <div class="visual-gallery">
             <div class="figure-frame wide-visual">
-              <img src="images/confusion_matrix_comparison.png" alt="Confusion Matrix Comparison">
-              <div class="figure-caption">Fig 5.1: Comparative Analysis: Zero-Shot (Left) vs Few-Shot (Right)</div>
+              <img src="images/confusion.png" alt="Confusion Matrix Comparison">
+              <div class="figure-caption">Fig 5.1: Zero-Shot (Left) vs Few-Shot (Right) Confusion Matrices</div>
             </div>
           </div>
 
           <div style="margin-top: 3rem;">
-            <h3 class="card-title">Performance Comparison: Accuracy and Confusion Matrix Analysis</h3>
+            <h3 class="card-title">Performance Discussion</h3>
             <p class="track-copy">
-The Few-shot model achieves a significantly higher accuracy (82.08%) compared to the Zero-shot approach (65.72%), indicating stronger overall classification performance.
+              The Few-shot model achieves a significantly higher accuracy of <strong>83.73%</strong> compared to the Zero-shot approach (<strong>65.07%</strong>), demonstrating the effectiveness of supervised adaptation even with noisy pseudo-labels.
 
-From the confusion matrices, the Few-shot model shows a clear improvement in correctly classifying samples across all categories, with higher values along the diagonal. In particular, it demonstrates better consistency in predicting dominant classes such as <em>person</em> and <em>animal</em>, while also maintaining reasonable performance on other categories.
-
-In contrast, the Zero-shot model exhibits more confusion between classes, especially with a noticeable spread of predictions away from the diagonal. For example, a large number of <em>person</em> samples are misclassified into other categories, reflecting weaker class discrimination.
-
-Overall, the confusion matrix confirms that the Few-shot model provides more accurate and stable predictions, aligning with its higher accuracy score.
-</p>
+              The confusion matrices reveal that while the Few-shot model correctly identifies most 'person' and 'animal' samples (644 and 249 respectively), the 'indoor' class remains a challenge for both paradigms due to visual ambiguity and smaller sample size. Zero-shot CLIP exhibits more confusion, particularly misclassifying 'person' as 'indoor' or 'vehicle' in complex scenes.
+            </p>
           </div>
+          <p class="track-copy" style="font-weight:600;">
+Key Insight: Label quality has a greater impact on performance than model complexity.
+</p>
         </article>
       </section>
 
+      <!-- EXTENSIONS SECTION -->
       <section id="extensions" class="section">
-  <h2 class="section-title">06. Project Extensions & Innovations</h2>
-  <p class="section-copy">Going beyond basic classification: Implementing advanced semantic distillation and robustness enhancements.</p>
-  
-  <article class="content-card">
-    <div class="story-grid">
-      <div class="story-block">
-        <p class="card-kicker">Innovation 01</p>
-        <h3 class="card-title">LLM-based Semantic Distillation</h3>
-        <p class="track-copy">Instead of the provided keyword-matching method, I implemented a <strong>Zero-shot Distillation</strong> pipeline using <code>BART-Large-MNLI</code>. This allowed the project to handle abstract descriptions, ensuring that ground-truth labels were assigned based on deep semantic reasoning rather than brittle string overlaps.</p>
-      </div>
-      <div class="story-block">
-        <p class="card-kicker">Innovation 02</p>
-        <h3 class="card-title">Multi-view Mean Aggregation</h3>
-<p class="track-copy">
-I engineered an <strong>Ensemble-based Feature Extraction</strong> strategy. By generating multiple geometric variants of each image (original, flipped, resized) and averaging their embeddings, the model achieves more stable and robust visual representations. This helps reduce sensitivity to spatial variations and improves the consistency of similarity-based predictions.
-</p>
-      </div>
-    </div>
+        <h2 class="section-title">06. Project Extensions & Innovations</h2>
+        <p class="section-copy">Going beyond basic classification: Implementing advanced semantic distillation and robustness enhancements.</p>
+        
+        <article class="content-card">
+          <div class="story-grid">
+            <div class="story-block">
+              <p class="card-kicker">Innovation 01</p>
+              <h3 class="card-title">LLM-based Semantic Distillation</h3>
+              <p class="track-copy">Instead of basic keyword-matching, I implemented a zero-shot distillation pipeline using <code>BART-Large-MNLI</code>. This allows the project to handle abstract descriptions, assigning labels based on deep semantic context rather than brittle text overlaps.</p>
+            </div>
+            <div class="story-block">
+              <p class="card-kicker">Innovation 02</p>
+              <h3 class="card-title">Multi-view Ensemble Extraction</h3>
+              <p class="track-copy">I engineered a robust feature extraction strategy. By generating multiple geometric variants (original, flipped, resized) and averaging their embeddings, the model achieves <strong>mean feature stability</strong>, reducing sensitivity to spatial shifts.</p>
+            </div>
+          </div>
 
-    
-
-    <!-- CODE BLOCK FOR VISUALIZATION EXTENSION -->
-    <div class="code-sample">
-      <div class="code-sample-bar">
-        <div class="code-sample-dots"><span></span><span></span><span></span></div>
-        <span class="code-sample-label">extension_diagnostics.py</span>
-        <button class="code-sample-copy" onclick="copySnippet(this)">Copy Snippet</button>
-      </div>
-<pre><code class="language-python"># Extension: Visualizing failure cases where Few-shot bias occurs
-def plot_diagnostic_comparison(incorrect_indices):
-    # This utility fetches images where Linear Probing failed 
-    # but Zero-shot succeeded, providing qualitative insight into bias.
-    for idx in incorrect_indices:
-        display_results(image[idx], true_label[idx], zs_pred[idx], fs_pred[idx])</code></pre>
-    </div>
-  </article>
-</section>
+          <div class="code-sample">
+            <div class="code-sample-bar">
+              <div class="code-sample-dots"><span></span><span></span><span></span></div>
+              <span class="code-sample-label">validation_logic.py</span>
+              <button class="code-sample-copy" onclick="copySnippet(this)">Copy Snippet</button>
+            </div>
+<pre><code class="language-python"># Model selection based on validation loss
+if val_loss < best_val_loss:
+    best_val_loss = val_loss
+    best_weights = head_model.state_dict()
+    print(f"Saved best model at Epoch {epoch+1}")</code></pre>
+          </div>
+        </article>
+      </section>
 
     </div>
   </main>
@@ -499,7 +493,7 @@ def plot_diagnostic_comparison(incorrect_indices):
     });
 
     /** 
-     * TABS CONTROLLER (FIXED) 
+     * TABS CONTROLLER 
      */
     const tabTriggers = document.querySelectorAll('.transfer-step');
     const tabPanels = document.querySelectorAll('.tab-panel-body');
@@ -522,11 +516,9 @@ def plot_diagnostic_comparison(incorrect_indices):
     const navLinks = document.querySelectorAll('.side-rail-link');
 
     window.addEventListener('scroll', () => {
-      // Progress Line
       const totalH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       progressBar.style.width = (window.pageYOffset / totalH) * 100 + "%";
 
-      // Scroll Spy
       let activeId = "";
       contentSections.forEach(sec => {
         const rect = sec.getBoundingClientRect();
@@ -539,7 +531,7 @@ def plot_diagnostic_comparison(incorrect_indices):
     });
 
     /** 
-     * SCROLL REVEAL OBSERVER (FIXED) 
+     * SCROLL REVEAL OBSERVER 
      */
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -549,7 +541,7 @@ def plot_diagnostic_comparison(incorrect_indices):
     contentSections.forEach(s => revealObserver.observe(s));
 
     /** 
-     * COPY CODE UTILITY (FIXED) 
+     * COPY CODE UTILITY 
      */
     function copySnippet(btn) {
       const code = btn.closest('.code-sample').querySelector('code').innerText;
